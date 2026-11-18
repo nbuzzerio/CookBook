@@ -22,6 +22,8 @@ pnpm preview
 
 The production build serves from `/apps/recipes/`. Open `http://127.0.0.1:4173/apps/recipes/` for a static preview. Recipe links use the hash. Production API requests use the same host under `/api/v1/`.
 
+GitHub Actions validates pull requests and deploys successful pushes to main after one-time server and environment setup. [Deployment, verification and rollback](docs/CI_CD_DEPLOYMENT.md)
+
 For development with a separate **loopback** Personal Sync Service on port 4317, set `COUNTERTOP_LOCAL_PSS=1` before starting Vite and configure that service with the exact Vite origin. The cookbook also works independently of the service.
 
 ## Use your cookbook
@@ -91,7 +93,7 @@ The app uses Vite, React, strict TypeScript, Tailwind CSS, Lucide, Zod, and Vite
 
 Automated domain and persistence tests run with `pnpm test`; strict checking and the production build have separate commands above. No lint script is configured.
 
-For browser checks, run the app locally and use `node scripts/browser-smoke.mjs` and `node scripts/browser-edge-cases.mjs`. They launch an isolated headless Chrome profile using the installed Chrome browser. Set `COUNTERTOP_URL` to test another server or deployment subpath. The smoke suite captures screenshots in ignored `.qa/` and checks 56 view/width combinations (360–1440px). The edge suite checks concurrent timers, changed shopping requirements, safe import rendering, long names, and storage failures.
+For browser checks, run the app locally and use `node scripts/browser-smoke.mjs` and `node scripts/browser-edge-cases.mjs`. They launch isolated headless profiles with installed Chrome on Windows or Playwright Chromium on Linux. Set `COUNTERTOP_URL` to test a loopback server or deployment subpath. The smoke suite captures screenshots in ignored `.qa/` and checks 56 view/width combinations (360–1440px). The edge suite checks concurrent timers, changed shopping requirements, safe import rendering, long names, and storage failures.
 
 Run `node scripts/browser-stretch.mjs` for the dinner timing, focus, wake-lock lifecycle, timer-sound, timer-extension, resume-session, print-layout, and individual-export checks. Browser API mocks verify wake-lock and audio lifecycle without changing the host's screen or playing sound; actual device behavior remains subject to browser support.
 

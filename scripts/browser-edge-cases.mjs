@@ -1,10 +1,11 @@
-import { chromium, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { launchBrowser, localURL } from './browser-local.mjs';
 import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
 
-const base=process.env.COUNTERTOP_URL||'http://127.0.0.1:5173/';
+const base=localURL(5173);
 const recipe=JSON.parse(await fs.readFile('src/data/recipes/mushroom-meatloaf-dinner.json','utf8'));
-const browser=await chromium.launch({channel:'chrome',headless:true});
+const browser=await launchBrowser();
 const context=await browser.newContext({viewport:{width:360,height:800}});
 const page=await context.newPage();
 const errors=[];

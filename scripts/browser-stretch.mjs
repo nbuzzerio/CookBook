@@ -1,12 +1,13 @@
-import { chromium, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { launchBrowser, localURL } from './browser-local.mjs';
 import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
 
-const base=process.env.COUNTERTOP_URL||'http://127.0.0.1:5173/';
+const base=localURL(5173);
 const recipe=JSON.parse(await fs.readFile('src/data/recipes/mushroom-meatloaf-dinner.json','utf8'));
 const secondRecipe=JSON.parse(await fs.readFile('src/data/recipes/spinach-mushroom-baked-ziti.json','utf8'));
 await fs.mkdir('.qa/stretch',{recursive:true});
-const browser=await chromium.launch({channel:'chrome',headless:true});
+const browser=await launchBrowser();
 const context=await browser.newContext({viewport:{width:390,height:844},colorScheme:'light',reducedMotion:'reduce',acceptDownloads:true});
 await context.addInitScript(()=>{
   window.__testTools={requests:0,releases:0,resumes:0,tones:0,closes:0,hidden:false};

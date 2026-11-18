@@ -1,16 +1,17 @@
 import { readLibrary, setRestoreFixture } from './browser-storage.mjs';
-import { chromium, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { launchBrowser, localURL } from './browser-local.mjs';
 import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
 
-const base = process.env.COUNTERTOP_URL || 'http://127.0.0.1:5175/';
+const base = localURL(5175);
 const recipes = await Promise.all(['mushroom-meatloaf-dinner', 'spinach-mushroom-baked-ziti'].map(async name => JSON.parse(await fs.readFile(`src/data/recipes/${name}.json`, 'utf8'))));
 const [recipe, other] = recipes;
 const timedStep = recipe.events.find(event => event.timerMinutes);
 const prefix = 'countertop:v1:';
 const note = 'Buy the certified GF oats.\nRemember <b>vegetarian</b> cheese.';
 await fs.mkdir('.qa/full-backup', { recursive: true });
-const browser = await chromium.launch({ channel: 'chrome', headless: true });
+const browser = await launchBrowser();
 const errors = [];
 try {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, colorScheme: 'light', reducedMotion: 'reduce', acceptDownloads: true });

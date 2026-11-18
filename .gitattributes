@@ -1,0 +1,8 @@
+deploy/*.sh text eol=lf
+deploy/*.py text eol=lf
+deploy/*.conf text eol=lf
+deploy/*.service text eol=lf
+deploy/*.path text eol=lf
+tests/*.py text eol=lf
+tests/*.sh text eol=lf
+.github/workflows/*.yml text eol=lf

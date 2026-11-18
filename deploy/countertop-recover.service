@@ -1,0 +1,19 @@
+[Unit]
+Description=Recover an interrupted Countertop release
+After=local-fs.target
+Before=nginx.service
+
+[Service]
+Type=oneshot
+User=recipes-deploy
+Group=recipes-deploy
+ExecStart=/bin/sh /usr/local/lib/countertop/login.sh recover-wait
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/www/countertop
+PrivateNetwork=true
+TimeoutStartSec=infinity
+
+[Install]
+WantedBy=multi-user.target

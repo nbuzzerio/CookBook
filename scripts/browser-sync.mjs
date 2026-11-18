@@ -5,7 +5,8 @@ import { mkdir, mkdtemp, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { resolve as path, join } from 'node:path';
 import { createRequire } from 'node:module';
-import { chromium, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { launchBrowser } from './browser-local.mjs';
 import { readLibrary } from './browser-storage.mjs';
 import { openDatabase, migrate } from '../../personal-sync-service/dist/src/db/database.js';
 import { bootstrapOwner } from '../../personal-sync-service/dist/src/auth/auth.js';
@@ -60,7 +61,7 @@ try {
   const recipe = JSON.parse(await readFile('src/data/recipes/spinach-mushroom-baked-ziti.json', 'utf8'));
   const local = { ...structuredClone(recipe), id: 'family-lasagna', name: 'Family lasagna', futureMetadata: { edition: 2 } };
   local.ingredients[0].marketHint = 'Saturday';
-  browser = await chromium.launch({ channel: 'chrome' });
+  browser = await launchBrowser();
   const errors = [];
   async function device(width, seed) {
     const context = await browser.newContext({ viewport: { width, height: 900 }, colorScheme: width < 500 ? 'dark' : 'light' });
