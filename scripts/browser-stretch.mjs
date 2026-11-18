@@ -1,0 +1,130 @@
+import { chromium, expect } from '@playwright/test';
+import fs from 'node:fs/promises';
+import assert from 'node:assert/strict';
+
+const base=process.env.COUNTERTOP_URL||'http://127.0.0.1:5173/';
+const recipe=JSON.parse(await fs.readFile('src/data/recipes/mushroom-meatloaf-dinner.json','utf8'));
+const secondRecipe=JSON.parse(await fs.readFile('src/data/recipes/spinach-mushroom-baked-ziti.json','utf8'));
+await fs.mkdir('.qa/stretch',{recursive:true});
+const browser=await chromium.launch({channel:'chrome',headless:true});
+const context=await browser.newContext({viewport:{width:390,height:844},colorScheme:'light',reducedMotion:'reduce',acceptDownloads:true});
+await context.addInitScript(()=>{
+  window.__testTools={requests:0,releases:0,resumes:0,tones:0,closes:0,hidden:false};
+  Object.defineProperty(document,'visibilityState',{configurable:true,get:()=>window.__testTools.hidden?'hidden':'visible'});
+  Object.defineProperty(navigator,'wakeLock',{configurable:true,value:{request:async()=>{
+    window.__testTools.requests++;
+    const lock=new EventTarget();
+    lock.released=false;
+    lock.release=async()=>{if(!lock.released){lock.released=true;window.__testTools.releases++;lock.dispatchEvent(new Event('release'));}};
+    return lock;
+  }}});
+  window.AudioContext=class {
+    state='suspended';currentTime=0;destination={};
+    async resume(){this.state='running';window.__testTools.resumes++;}
+    async close(){this.state='closed';window.__testTools.closes++;}
+    createOscillator(){return{frequency:{value:0},type:'sine',connect(){},disconnect(){},start(){window.__testTools.tones++;},stop(){}};}
+    createGain(){return{gain:{setValueAtTime(){},exponentialRampToValueAtTime(){}},connect(){},disconnect(){}};}
+  };
+});
+const page=await context.newPage();
+const errors=[];
+page.on('pageerror',error=>errors.push(error.message));
+await page.clock.install();
+await page.goto(`${base}#/recipe/${recipe.id}/cook`);
+await page.getByRole('button',{name:'Focus mode',exact:true}).click();
+await expect(page.locator('.mobile-nav')).toBeHidden();
+await expect(page.locator('.recipe-tabs')).toBeHidden();
+await expect(page.getByRole('button',{name:'Exit focus',exact:true})).toBeFocused();
+assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+await page.screenshot({path:'.qa/stretch/focus-phone.png',fullPage:true});
+await page.keyboard.press('Escape');
+await expect(page.locator('.mobile-nav')).toBeVisible();
+await page.getByRole('button',{name:'Keep screen awake',exact:true}).click();
+await expect(page.getByRole('button',{name:'Screen stays awake',exact:true})).toBeVisible();
+assert.equal(await page.evaluate(()=>window.__testTools.requests),1);
+await page.evaluate(()=>{window.__testTools.hidden=true;document.dispatchEvent(new Event('visibilitychange'));});
+await expect(page.locator('#cook-screen-status')).toContainText('when you return');
+assert.equal(await page.evaluate(()=>window.__testTools.releases),1);
+await page.evaluate(()=>{window.__testTools.hidden=false;document.dispatchEvent(new Event('visibilitychange'));});
+await expect(page.getByRole('button',{name:'Screen stays awake',exact:true})).toBeVisible();
+assert.equal(await page.evaluate(()=>window.__testTools.requests),2);
+await page.getByRole('button',{name:'Enable timer sound',exact:true}).click();
+await expect(page.getByRole('button',{name:'Timer sound on',exact:true})).toHaveAttribute('aria-pressed','true');
+assert.equal(await page.evaluate(()=>window.__testTools.resumes),1);
+await page.getByRole('button',{name:'Begin cooking',exact:true}).click();
+await page.getByRole('button',{name:'Start timer for Put the lentils on',exact:true}).click();
+await page.clock.fastForward(25*60_000+1000);
+await expect(page.locator('.cook-live-timer.is-finished')).toHaveCount(1);
+assert.equal(await page.evaluate(()=>window.__testTools.tones),2,'One two-tone chime should play');
+await page.clock.fastForward(1000);
+assert.equal(await page.evaluate(()=>window.__testTools.tones),2,'Chime must not repeat');
+await page.getByRole('button',{name:'Add one minute to timer for Put the lentils on',exact:true}).click();
+await expect(page.locator('.cook-live-timer.is-finished')).toHaveCount(0);
+await expect(page.locator('.cook-focus-card')).toContainText('01:00');
+await expect(page.locator('.cook-focus-card').getByRole('button',{name:'Resume timer for Put the lentils on',exact:true})).toBeVisible();
+await page.locator('.mobile-nav').getByRole('link',{name:'Library',exact:true}).click();
+await expect(page.getByRole('button',{name:`Resume cooking ${recipe.name}`})).toBeVisible();
+assert.equal(await page.evaluate(()=>window.__testTools.releases),2,'Leaving Cook releases screen lock');
+assert.equal(await page.evaluate(()=>window.__testTools.closes),1,'Leaving Cook closes audio');
+await page.getByRole('button',{name:`Resume cooking ${recipe.name}`}).click();
+await expect(page.getByRole('button',{name:'Enable timer sound',exact:true})).toBeVisible();
+await expect(page.getByRole('button',{name:'Keep screen awake',exact:true})).toHaveAttribute('aria-pressed','false');
+await page.getByRole('button',{name:'Overview',exact:true}).click();
+await page.getByRole('button',{name:'Increase servings',exact:true}).click();
+const downloadEvent=page.waitForEvent('download');
+await page.getByRole('button',{name:'Export recipe JSON',exact:true}).click();
+const download=await downloadEvent;
+await download.saveAs('.qa/stretch/recipe.json');
+assert.deepEqual(JSON.parse(await fs.readFile('.qa/stretch/recipe.json','utf8')),recipe);
+await page.evaluate(()=>{window.__printed=false;window.print=()=>{window.__printed=true;};});
+await page.getByRole('button',{name:'Print recipe',exact:true}).click();
+assert.equal(await page.evaluate(()=>window.__printed),true);
+await page.emulateMedia({media:'print'});
+await expect(page.locator('.recipe-print-sheet')).toBeVisible();
+await expect(page.locator('.recipe-heading')).toBeHidden();
+await expect(page.locator('.recipe-paper-component li').filter({hasText:'Ground beef'})).toContainText('2.71 lb');
+await expect(page.locator('.recipe-paper-timeline li')).toHaveCount(recipe.events.length);
+await page.setViewportSize({width:816,height:1056});
+await page.screenshot({path:'.qa/stretch/printed-recipe.png',fullPage:true});
+await page.emulateMedia({media:'screen'});
+await page.getByRole('button',{name:'Add to shopping list',exact:true}).click();
+await page.goto(`${base}#/recipe/${secondRecipe.id}/overview`);
+await page.getByRole('button',{name:'Add to shopping list',exact:true}).click();
+await page.goto(`${base}#/shopping`);
+await page.getByRole('link',{name:'Time this dinner',exact:true}).click();
+await page.locator('.dinner-page').waitFor();
+for(const width of [360,390,600,768,1024,1440]){
+  await page.setViewportSize({width,height:900});
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,`Dinner overflow at ${width}`);
+  if([390,768,1440].includes(width))await page.screenshot({path:`.qa/stretch/dinner-${width}.png`,fullPage:true});
+}
+// Functional dinner form checks are kept semantic so styling can evolve.
+const targetInput=page.locator('input[type="datetime-local"]');
+await targetInput.fill('2031-01-01T00:30');
+await targetInput.press('Enter');
+await expect(page.locator('.dinner-page')).toContainText('2030');
+await expect(page.locator('.dinner-page')).toContainText('2031');
+await page.reload();
+await expect(targetInput).toHaveValue('2031-01-01T00:30');
+await page.goto(`${base}#/shopping`);
+await page.emulateMedia({media:'print'});
+await expect(page.locator('.shopping-category').first()).toBeVisible();
+await expect(page.locator('.recipe-print-sheet')).toHaveCount(0);
+await page.emulateMedia({media:'screen'});
+await page.goto(`${base}#/settings`);
+await page.getByRole('radio',{name:'System',exact:true}).check();
+await page.emulateMedia({colorScheme:'dark'});
+await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
+await expect(page.locator('.theme-toggle .lucide-sun')).toBeVisible();
+await page.emulateMedia({colorScheme:'light'});
+await expect(page.locator('html')).toHaveAttribute('data-theme','light');
+
+const denied=await browser.newContext();
+await denied.addInitScript(()=>Object.defineProperty(navigator,'wakeLock',{value:{request:()=>Promise.reject(new Error('Denied'))},configurable:true}));
+const deniedPage=await denied.newPage();
+await deniedPage.goto(`${base}#/recipe/${recipe.id}/cook`);
+await deniedPage.getByRole('button',{name:'Keep screen awake',exact:true}).click();
+await expect(deniedPage.locator('#cook-screen-status')).toContainText('did not allow');
+assert.deepEqual(errors,[]);
+await browser.close();
+console.log('PASS: focus/Escape, wake lock lifecycle/denial, opt-in expiry chime, +1 minute, library resume, original JSON export, scaled print layout, dinner coordination/responsive/midnight persistence, shopping print isolation, system theme changes.');

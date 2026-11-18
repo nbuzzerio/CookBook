@@ -1,0 +1,296 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "type": "number",
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 3000
+    },
+    "category": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "tags": {
+      "maxItems": 30,
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80
+      }
+    },
+    "dietaryTags": {
+      "maxItems": 20,
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80
+      }
+    },
+    "coverImage": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "servings": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    },
+    "servingDescription": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 3000
+    },
+    "prepMinutes": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 10080
+    },
+    "cookMinutes": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 10080
+    },
+    "totalMinutes": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 10080
+    },
+    "components": {
+      "minItems": 1,
+      "maxItems": 30,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 3000
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "ingredients": {
+      "minItems": 1,
+      "maxItems": 300,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$"
+          },
+          "componentId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 3000
+          },
+          "quantity": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 1000000
+          },
+          "unit": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "quantityText": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "preparation": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 3000
+          },
+          "optional": {
+            "type": "boolean"
+          },
+          "scalable": {
+            "type": "boolean"
+          },
+          "groceryCategory": {
+            "type": "string",
+            "enum": [
+              "Produce",
+              "Meat",
+              "Dairy",
+              "Pantry",
+              "Bakery",
+              "Other"
+            ]
+          },
+          "shoppingKey": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$"
+          }
+        },
+        "required": [
+          "id",
+          "componentId",
+          "name",
+          "optional",
+          "scalable",
+          "groceryCategory",
+          "shoppingKey"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "events": {
+      "minItems": 1,
+      "maxItems": 200,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$"
+          },
+          "startMinute": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 10080
+          },
+          "durationMinutes": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 10080
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 3000
+          },
+          "instruction": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 3000
+          },
+          "track": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "componentId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$"
+          },
+          "timerMinutes": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 10080
+          },
+          "temperature": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "doneness": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 3000
+          },
+          "approximate": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "startMinute",
+          "title",
+          "instruction",
+          "track"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "notes": {
+      "maxItems": 50,
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 3000
+      }
+    },
+    "servingInstructions": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 3000
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "id",
+    "name",
+    "description",
+    "category",
+    "tags",
+    "dietaryTags",
+    "servings",
+    "prepMinutes",
+    "cookMinutes",
+    "totalMinutes",
+    "components",
+    "ingredients",
+    "events",
+    "notes",
+    "servingInstructions"
+  ],
+  "additionalProperties": false,
+  "title": "Countertop recipe · version 1",
+  "$comment": "Generated from src/domain/schema.ts. Zod runtime validation additionally checks reserved and unique IDs, component references, safe image paths, text-only quantity rules, and timeline bounds. Do not edit this generated file directly."
+}

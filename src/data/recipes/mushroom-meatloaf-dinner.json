@@ -1,0 +1,503 @@
+{
+  "schemaVersion": 1,
+  "id": "mushroom-meatloaf-dinner",
+  "name": "Mushroom Meatloaf Dinner",
+  "description": "Two generous loaves, one shared table. Deeply savory mushrooms bring a tender beef loaf and a golden lentil loaf together for a slow, satisfying Sunday dinner.",
+  "category": "Sunday suppers",
+  "tags": [
+    "Comfort food",
+    "Multi-component",
+    "Make together"
+  ],
+  "dietaryTags": [
+    "Gluten-free",
+    "Vegetarian option"
+  ],
+  "coverImage": "assets/images/meatloaf.jpg",
+  "servings": 12,
+  "servingDescription": "8 beef-loaf portions + 4 vegetarian portions",
+  "prepMinutes": 60,
+  "cookMinutes": 70,
+  "totalMinutes": 140,
+  "components": [
+    {
+      "id": "beef",
+      "name": "Beef & mushroom loaf",
+      "description": "A generous beef loaf with finely minced mushrooms, oats, and herbs."
+    },
+    {
+      "id": "lentil",
+      "name": "Lentil & mushroom loaf",
+      "description": "A separate vegetarian loaf with lentils, mushrooms, and melting cheese."
+    }
+  ],
+  "ingredients": [
+    {
+      "id": "beef-meat",
+      "componentId": "beef",
+      "name": "Ground beef",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Meat",
+      "shoppingKey": "ground-beef",
+      "quantity": 2.5,
+      "unit": "lb",
+      "preparation": "85% lean"
+    },
+    {
+      "id": "beef-shiitake",
+      "componentId": "beef",
+      "name": "Shiitake mushrooms",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Produce",
+      "shoppingKey": "shiitake-mushrooms",
+      "quantity": 8,
+      "unit": "oz",
+      "preparation": "Remove tough stems; finely mince"
+    },
+    {
+      "id": "beef-oyster",
+      "componentId": "beef",
+      "name": "Oyster mushrooms",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Produce",
+      "shoppingKey": "oyster-mushrooms",
+      "quantity": 8,
+      "unit": "oz",
+      "preparation": "Trim and finely mince"
+    },
+    {
+      "id": "beef-oil",
+      "componentId": "beef",
+      "name": "Olive oil",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Pantry",
+      "shoppingKey": "olive-oil",
+      "quantity": 1,
+      "unit": "tbsp"
+    },
+    {
+      "id": "beef-oats",
+      "componentId": "beef",
+      "name": "Certified gluten-free rolled oats",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Pantry",
+      "shoppingKey": "gf-rolled-oats",
+      "quantity": 1,
+      "unit": "cup"
+    },
+    {
+      "id": "beef-milk",
+      "componentId": "beef",
+      "name": "Milk",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Dairy",
+      "shoppingKey": "milk",
+      "quantity": 0.75,
+      "unit": "cup"
+    },
+    {
+      "id": "beef-eggs",
+      "componentId": "beef",
+      "name": "Large eggs",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Dairy",
+      "shoppingKey": "large-eggs",
+      "quantity": 2,
+      "preparation": "Lightly beaten"
+    },
+    {
+      "id": "beef-onion",
+      "componentId": "beef",
+      "name": "Yellow onion",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Produce",
+      "shoppingKey": "yellow-onion",
+      "quantity": 1,
+      "preparation": "Finely diced"
+    },
+    {
+      "id": "beef-garlic",
+      "componentId": "beef",
+      "name": "Garlic",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Produce",
+      "shoppingKey": "garlic",
+      "quantity": 3,
+      "unit": "cloves",
+      "preparation": "Minced"
+    },
+    {
+      "id": "beef-worcestershire",
+      "componentId": "beef",
+      "name": "Gluten-free Worcestershire sauce",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Pantry",
+      "shoppingKey": "gf-worcestershire",
+      "quantity": 2,
+      "unit": "tbsp"
+    },
+    {
+      "id": "beef-mustard",
+      "componentId": "beef",
+      "name": "Dry mustard",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Pantry",
+      "shoppingKey": "dry-mustard",
+      "quantity": 1,
+      "unit": "tsp"
+    },
+    {
+      "id": "beef-sage",
+      "componentId": "beef",
+      "name": "Dried rubbed sage",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Pantry",
+      "shoppingKey": "dried-sage",
+      "quantity": 1,
+      "unit": "tsp"
+    },
+    {
+      "id": "beef-thyme",
+      "componentId": "beef",
+      "name": "Dried thyme",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Pantry",
+      "shoppingKey": "dried-thyme",
+      "quantity": 1,
+      "unit": "tsp"
+    },
+    {
+      "id": "beef-salt",
+      "componentId": "beef",
+      "name": "Fine salt",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Pantry",
+      "shoppingKey": "fine-salt",
+      "quantity": 1.5,
+      "unit": "tsp"
+    },
+    {
+      "id": "beef-pepper",
+      "componentId": "beef",
+      "name": "Black pepper",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Pantry",
+      "shoppingKey": "black-pepper",
+      "quantity": 0.5,
+      "unit": "tsp",
+      "preparation": "Freshly ground"
+    },
+    {
+      "id": "lentil-dried",
+      "componentId": "lentil",
+      "name": "Brown or green lentils",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Pantry",
+      "shoppingKey": "brown-green-lentils",
+      "quantity": 0.75,
+      "unit": "cup",
+      "preparation": "Dry, rinsed; yields about 2 cups cooked"
+    },
+    {
+      "id": "lentil-shiitake",
+      "componentId": "lentil",
+      "name": "Shiitake mushrooms",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Produce",
+      "shoppingKey": "shiitake-mushrooms",
+      "quantity": 4,
+      "unit": "oz",
+      "preparation": "Remove tough stems; finely mince"
+    },
+    {
+      "id": "lentil-oyster",
+      "componentId": "lentil",
+      "name": "Oyster mushrooms",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Produce",
+      "shoppingKey": "oyster-mushrooms",
+      "quantity": 4,
+      "unit": "oz",
+      "preparation": "Trim and finely mince"
+    },
+    {
+      "id": "lentil-oil",
+      "componentId": "lentil",
+      "name": "Olive oil",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Pantry",
+      "shoppingKey": "olive-oil",
+      "quantity": 1,
+      "unit": "tbsp"
+    },
+    {
+      "id": "lentil-oats",
+      "componentId": "lentil",
+      "name": "Certified gluten-free rolled oats",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Pantry",
+      "shoppingKey": "gf-rolled-oats",
+      "quantity": 0.75,
+      "unit": "cup"
+    },
+    {
+      "id": "lentil-egg",
+      "componentId": "lentil",
+      "name": "Large eggs",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Dairy",
+      "shoppingKey": "large-eggs",
+      "quantity": 1,
+      "preparation": "Lightly beaten"
+    },
+    {
+      "id": "lentil-mozzarella",
+      "componentId": "lentil",
+      "name": "Mozzarella",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Dairy",
+      "shoppingKey": "mozzarella",
+      "quantity": 0.75,
+      "unit": "cup",
+      "preparation": "Shredded"
+    },
+    {
+      "id": "lentil-parmesan",
+      "componentId": "lentil",
+      "name": "Vegetarian Parmesan-style cheese",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Dairy",
+      "shoppingKey": "vegetarian-parmesan",
+      "quantity": 0.25,
+      "unit": "cup",
+      "preparation": "Finely grated; vegetarian rennet"
+    },
+    {
+      "id": "lentil-onion",
+      "componentId": "lentil",
+      "name": "Yellow onion",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Produce",
+      "shoppingKey": "yellow-onion",
+      "quantity": 0.5,
+      "preparation": "Finely diced"
+    },
+    {
+      "id": "lentil-garlic",
+      "componentId": "lentil",
+      "name": "Garlic",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Produce",
+      "shoppingKey": "garlic",
+      "quantity": 2,
+      "unit": "cloves",
+      "preparation": "Minced"
+    },
+    {
+      "id": "lentil-thyme",
+      "componentId": "lentil",
+      "name": "Dried thyme",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Pantry",
+      "shoppingKey": "dried-thyme",
+      "quantity": 1,
+      "unit": "tsp"
+    },
+    {
+      "id": "lentil-salt",
+      "componentId": "lentil",
+      "name": "Fine salt",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Pantry",
+      "shoppingKey": "fine-salt",
+      "quantity": 0.5,
+      "unit": "tsp"
+    },
+    {
+      "id": "lentil-pepper",
+      "componentId": "lentil",
+      "name": "Black pepper",
+      "optional": false,
+      "scalable": false,
+      "groceryCategory": "Pantry",
+      "shoppingKey": "black-pepper",
+      "quantityText": "to taste"
+    },
+    {
+      "id": "lentil-parsley",
+      "componentId": "lentil",
+      "name": "Fresh parsley",
+      "optional": true,
+      "scalable": true,
+      "groceryCategory": "Produce",
+      "shoppingKey": "fresh-parsley",
+      "quantity": 2,
+      "unit": "tbsp",
+      "preparation": "Chopped, for serving"
+    }
+  ],
+  "events": [
+    {
+      "id": "start-lentils",
+      "startMinute": 0,
+      "title": "Put the lentils on",
+      "instruction": "Rinse the lentils. Cover generously with water in a saucepan, bring to a boil, then lower to a gentle simmer. Cook uncovered until tender but not falling apart, about 25–30 minutes. Add water if needed.",
+      "track": "Vegetarian loaf",
+      "approximate": true,
+      "durationMinutes": 30,
+      "componentId": "lentil",
+      "timerMinutes": 25,
+      "doneness": "Tender throughout, with no chalky center."
+    },
+    {
+      "id": "gather-prep",
+      "startMinute": 5,
+      "title": "Set up two work areas",
+      "instruction": "Set out separate bowls, utensils, and loaf pans for the beef and vegetarian mixtures. Clean the mushrooms, remove tough stems, and chop the onions and garlic, keeping the amounts for each loaf separate. Leave the beef refrigerated for now.",
+      "track": "Shared prep",
+      "approximate": true,
+      "durationMinutes": 10
+    },
+    {
+      "id": "mince-mushrooms",
+      "startMinute": 15,
+      "title": "Finely mince the mushrooms",
+      "instruction": "Pulse each loaf’s mushrooms in a food processor in short bursts, or chop finely by hand. Aim for small pieces, not a wet paste. Keep the two portions labeled.",
+      "track": "Shared prep",
+      "approximate": true,
+      "durationMinutes": 5
+    },
+    {
+      "id": "saute-mushrooms",
+      "startMinute": 20,
+      "title": "Cook away the mushroom moisture",
+      "instruction": "Use separate skillets or cook the vegetarian batch first in a clean skillet. Heat each loaf’s olive oil over medium heat, soften its onion for 4–5 minutes, then add its mushrooms. Cook until the pan is almost dry, about 10–12 minutes. Add the garlic for the final minute. Spread on separate plates to cool.",
+      "track": "Stovetop",
+      "approximate": true,
+      "durationMinutes": 20,
+      "timerMinutes": 12
+    },
+    {
+      "id": "drain-lentils",
+      "startMinute": 30,
+      "title": "Drain and cool the lentils",
+      "instruction": "Test a few lentils. If tender, drain thoroughly and spread on a tray to release steam; if still firm, keep simmering and check again in 5 minutes. Mash roughly half once cool enough to handle.",
+      "track": "Vegetarian loaf",
+      "approximate": true,
+      "durationMinutes": 10,
+      "componentId": "lentil"
+    },
+    {
+      "id": "beef-mixture",
+      "startMinute": 40,
+      "title": "Bring the beef loaf together",
+      "instruction": "Heat the oven to 350°F. Soak the beef loaf’s oats in its milk for 5 minutes. Fold in the cooled beef portion of mushrooms and onions, eggs, Worcestershire, mustard, sage, thyme, salt, and pepper. Add cold ground beef last and mix gently just until combined. Shape in its own shallow loaf pan. Wash hands and sanitize the work area.",
+      "track": "Beef loaf",
+      "approximate": true,
+      "durationMinutes": 15,
+      "componentId": "beef",
+      "temperature": "Oven: 350°F / 175°C"
+    },
+    {
+      "id": "lentil-mixture",
+      "startMinute": 50,
+      "title": "Mix the vegetarian loaf",
+      "instruction": "In the clean vegetarian bowl, combine drained lentils, the cooled vegetarian mushrooms and onions, oats, mozzarella, Parmesan-style cheese, thyme, salt, and pepper. Taste and adjust seasoning before adding the raw egg. Stir in the egg and press into a separate lined loaf pan. Refrigerate until its oven slot.",
+      "track": "Vegetarian loaf",
+      "approximate": true,
+      "durationMinutes": 10,
+      "componentId": "lentil"
+    },
+    {
+      "id": "bake-beef",
+      "startMinute": 60,
+      "title": "The beef loaf goes in",
+      "instruction": "Place the beef loaf in the preheated oven. Set an initial 55-minute check timer. It may need about 65–70 minutes total, depending on the pan and loaf thickness. Keep the vegetarian pan separate and above any potential meat drips.",
+      "track": "Oven · beef",
+      "approximate": true,
+      "durationMinutes": 70,
+      "componentId": "beef",
+      "timerMinutes": 55,
+      "temperature": "350°F / 175°C",
+      "doneness": "The center must reach 160°F / 71°C."
+    },
+    {
+      "id": "bake-lentil",
+      "startMinute": 85,
+      "title": "The vegetarian loaf joins it",
+      "instruction": "Place the lentil loaf in the oven in its separate pan. Set a 30-minute check timer. Expect roughly 40–45 minutes, but check the center temperature independently.",
+      "track": "Oven · vegetarian",
+      "approximate": true,
+      "durationMinutes": 45,
+      "componentId": "lentil",
+      "timerMinutes": 30,
+      "temperature": "350°F / 175°C",
+      "doneness": "The egg-containing center must reach 160°F / 71°C."
+    },
+    {
+      "id": "check-loaves",
+      "startMinute": 115,
+      "title": "Check each loaf independently",
+      "instruction": "Insert a clean instant-read thermometer into the thickest center of each loaf, avoiding the pan. Clean the probe between loaves. Remove any loaf that has reached 160°F; leave the other baking and recheck every 5–10 minutes. Never use browning alone to judge the beef.",
+      "track": "Doneness",
+      "approximate": true,
+      "durationMinutes": 15,
+      "timerMinutes": 5,
+      "doneness": "Both loaves: at least 160°F / 71°C internally."
+    },
+    {
+      "id": "rest-loaves",
+      "startMinute": 130,
+      "title": "Give the loaves time to settle",
+      "instruction": "Once each loaf reaches its target temperature, remove it and rest for 10 minutes before slicing. If either is not ready, continue cooking and shift the serving time. Rest on separate boards; loosely tent the loaf that finishes first.",
+      "track": "Finishing",
+      "approximate": true,
+      "durationMinutes": 10,
+      "timerMinutes": 10
+    },
+    {
+      "id": "slice-serve",
+      "startMinute": 140,
+      "title": "Slice, pass, and enjoy",
+      "instruction": "Use separate clean knives and serving utensils. Slice each rested loaf and transfer to its own platter. Scatter optional parsley over the lentil loaf and bring both to the table.",
+      "track": "Finishing",
+      "approximate": true,
+      "componentId": "lentil"
+    }
+  ],
+  "notes": [
+    "This is an illustrative Countertop recipe, not a reproduction of a family recipe. The base batch makes about eight beef portions and four vegetarian portions; scaling keeps that ratio.",
+    "Use certified gluten-free oats and Worcestershire labeled gluten-free. Keep Worcestershire in the beef mixture only, and choose Parmesan-style cheese made with vegetarian rennet for the lentil loaf.",
+    "Keep vegetarian ingredients, bowls, pans, and utensils separate from raw beef. Wash hands and sanitize tools and surfaces after handling raw meat. Clean the thermometer between loaves.",
+    "Bake the loaves in separate shallow loaf pans with enough room for air circulation. The timeline is a coordination guide: use internal temperature, not the clock, to determine readiness.",
+    "Scaling changes ingredients only. Larger batches may need additional pans and longer baking; oven temperature and target internal temperatures stay the same."
+  ],
+  "servingInstructions": "Rest each loaf for 10 minutes after it reaches 160°F in the center. Slice with separate clean knives and serve on separate platters. Add your favorite green salad or steamed vegetables if desired; those sides are not included in this recipe."
+}

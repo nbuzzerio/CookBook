@@ -1,0 +1,286 @@
+{
+  "schemaVersion": 1,
+  "id": "italian-sausage-peppers",
+  "name": "Italian Sausage & Peppers",
+  "description": "Juicy Italian sausages, sweet peppers, and silky onions, finished together in the oven. A little air-fryer help gets dinner moving while the vegetables soften.",
+  "category": "Weeknight favorites",
+  "tags": [
+    "Air fryer",
+    "One tray finish",
+    "Italian inspired"
+  ],
+  "dietaryTags": [
+    "Dairy-free",
+    "Gluten-free option"
+  ],
+  "coverImage": "assets/images/sausage.jpg",
+  "servings": 4,
+  "servingDescription": "4 sausage sandwiches",
+  "prepMinutes": 10,
+  "cookMinutes": 30,
+  "totalMinutes": 45,
+  "components": [
+    {
+      "id": "sausage",
+      "name": "The sausages",
+      "description": "Pork Italian sausages, browned in the air fryer and finished in the oven."
+    },
+    {
+      "id": "peppers",
+      "name": "Peppers & onions",
+      "description": "A generous tangle of sweet peppers, onions, garlic, and oregano."
+    },
+    {
+      "id": "serving",
+      "name": "For the table",
+      "description": "Soft rolls, or gluten-free buns if you prefer."
+    }
+  ],
+  "ingredients": [
+    {
+      "id": "sausage-links",
+      "componentId": "sausage",
+      "name": "Italian pork sausages",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Meat",
+      "shoppingKey": "italian-pork-sausage",
+      "quantity": 4,
+      "preparation": "About 4 oz each; sweet or hot"
+    },
+    {
+      "id": "pepper-red",
+      "componentId": "peppers",
+      "name": "Red bell peppers",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Produce",
+      "shoppingKey": "red-bell-pepper",
+      "quantity": 2,
+      "preparation": "Seeded and sliced"
+    },
+    {
+      "id": "pepper-green",
+      "componentId": "peppers",
+      "name": "Green bell pepper",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Produce",
+      "shoppingKey": "green-bell-pepper",
+      "quantity": 1,
+      "preparation": "Seeded and sliced"
+    },
+    {
+      "id": "pepper-onion",
+      "componentId": "peppers",
+      "name": "Yellow onion",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Produce",
+      "shoppingKey": "yellow-onion",
+      "quantity": 1,
+      "preparation": "Sliced"
+    },
+    {
+      "id": "pepper-garlic",
+      "componentId": "peppers",
+      "name": "Garlic",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Produce",
+      "shoppingKey": "garlic",
+      "quantity": 3,
+      "unit": "cloves",
+      "preparation": "Thinly sliced"
+    },
+    {
+      "id": "pepper-oil",
+      "componentId": "peppers",
+      "name": "Olive oil",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Pantry",
+      "shoppingKey": "olive-oil",
+      "quantity": 2,
+      "unit": "tbsp"
+    },
+    {
+      "id": "pepper-oregano",
+      "componentId": "peppers",
+      "name": "Dried oregano",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Pantry",
+      "shoppingKey": "dried-oregano",
+      "quantity": 1,
+      "unit": "tsp"
+    },
+    {
+      "id": "pepper-salt",
+      "componentId": "peppers",
+      "name": "Fine salt",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Pantry",
+      "shoppingKey": "fine-salt",
+      "quantity": 0.5,
+      "unit": "tsp"
+    },
+    {
+      "id": "pepper-black",
+      "componentId": "peppers",
+      "name": "Black pepper",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Pantry",
+      "shoppingKey": "black-pepper",
+      "quantity": 0.25,
+      "unit": "tsp"
+    },
+    {
+      "id": "pepper-chili",
+      "componentId": "peppers",
+      "name": "Red pepper flakes",
+      "optional": true,
+      "scalable": true,
+      "groceryCategory": "Pantry",
+      "shoppingKey": "red-pepper-flakes",
+      "quantity": 0.25,
+      "unit": "tsp"
+    },
+    {
+      "id": "pepper-stock",
+      "componentId": "peppers",
+      "name": "Vegetable stock",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Pantry",
+      "shoppingKey": "vegetable-stock",
+      "quantity": 0.25,
+      "unit": "cup",
+      "preparation": "Check gluten-free label if needed"
+    },
+    {
+      "id": "serving-rolls",
+      "componentId": "serving",
+      "name": "Sandwich rolls",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Bakery",
+      "shoppingKey": "sandwich-rolls",
+      "quantity": 4,
+      "preparation": "Use gluten-free buns for a GF meal"
+    },
+    {
+      "id": "serving-parsley",
+      "componentId": "serving",
+      "name": "Fresh parsley",
+      "optional": true,
+      "scalable": true,
+      "groceryCategory": "Produce",
+      "shoppingKey": "fresh-parsley",
+      "quantity": 2,
+      "unit": "tbsp",
+      "preparation": "Chopped"
+    }
+  ],
+  "events": [
+    {
+      "id": "heat-prep",
+      "startMinute": 0,
+      "title": "Warm up and slice",
+      "instruction": "Heat the oven to 375°F and preheat the air fryer to 375°F. Slice the peppers, onion, and garlic. Set out a shallow oven-safe baking dish large enough for the sausages in one layer.",
+      "track": "Shared prep",
+      "approximate": true,
+      "durationMinutes": 10,
+      "temperature": "Oven and air fryer: 375°F / 190°C"
+    },
+    {
+      "id": "brown-sausages",
+      "startMinute": 10,
+      "title": "Brown the sausages in the air fryer",
+      "instruction": "Arrange the sausages in one layer with a little space between them. Air-fry for about 10 minutes, turning at 5 minutes. This browns the outside; the sausages will finish cooking in the oven. Use separate tongs for raw and cooked meat.",
+      "track": "Air fryer",
+      "approximate": true,
+      "durationMinutes": 10,
+      "componentId": "sausage",
+      "timerMinutes": 5,
+      "temperature": "375°F / 190°C"
+    },
+    {
+      "id": "saute-vegetables",
+      "startMinute": 10,
+      "title": "Soften the peppers and onions",
+      "instruction": "Meanwhile, heat olive oil in a large skillet over medium-high heat. Add peppers and onions with salt and black pepper. Cook, stirring occasionally, until softened and lightly browned, about 12–15 minutes.",
+      "track": "Stovetop",
+      "approximate": true,
+      "durationMinutes": 15,
+      "componentId": "peppers",
+      "timerMinutes": 12
+    },
+    {
+      "id": "turn-sausages",
+      "startMinute": 15,
+      "title": "Turn for even browning",
+      "instruction": "Turn the sausages carefully and continue air-frying for about 5 minutes. Keep the vegetables moving in the skillet as needed.",
+      "track": "Air fryer",
+      "approximate": true,
+      "durationMinutes": 5,
+      "componentId": "sausage",
+      "timerMinutes": 5
+    },
+    {
+      "id": "transfer-sausages",
+      "startMinute": 20,
+      "title": "Move the sausages to their tray",
+      "instruction": "Transfer the browned, partly cooked sausages to the baking dish and put it straight into the oven while the peppers finish. Do not hold partly cooked sausages for later.",
+      "track": "Oven",
+      "approximate": true,
+      "durationMinutes": 20,
+      "componentId": "sausage",
+      "timerMinutes": 15,
+      "temperature": "375°F / 190°C",
+      "doneness": "Italian pork sausages must reach 160°F / 71°C internally."
+    },
+    {
+      "id": "finish-vegetables",
+      "startMinute": 25,
+      "title": "Bring everything together",
+      "instruction": "Add garlic, oregano, and optional red pepper flakes to the skillet and stir for 1 minute. Pour in the stock and scrape up the browned bits. Carefully spoon the peppers and onions around the sausages in the oven dish; return it to the oven.",
+      "track": "Stovetop → oven",
+      "approximate": true,
+      "durationMinutes": 5,
+      "componentId": "peppers"
+    },
+    {
+      "id": "check-doneness",
+      "startMinute": 35,
+      "title": "Check the center of each sausage",
+      "instruction": "Check each sausage with an instant-read thermometer inserted into its center. Remove only when each reaches at least 160°F. If needed, bake for another 5 minutes and check again. Warm the rolls for the final few minutes, keeping any GF buns separate.",
+      "track": "Doneness",
+      "approximate": true,
+      "durationMinutes": 5,
+      "componentId": "sausage",
+      "timerMinutes": 5,
+      "doneness": "Pork sausages: 160°F / 71°C. Poultry sausage, if substituted: 165°F / 74°C."
+    },
+    {
+      "id": "rest-serve",
+      "startMinute": 40,
+      "title": "Rest briefly and fill the rolls",
+      "instruction": "Let the cooked sausages rest for a few minutes. Fill the warm rolls with a sausage and plenty of peppers and onions. Spoon over a little pan juice and add optional parsley.",
+      "track": "Finishing",
+      "approximate": true,
+      "durationMinutes": 5,
+      "componentId": "serving",
+      "timerMinutes": 5
+    }
+  ],
+  "notes": [
+    "Use Italian pork sausages for the stated cooking target. If substituting chicken or turkey sausage, cook to 165°F / 74°C.",
+    "Air-fryer timing varies by model and sausage thickness. The browning stage is not a doneness test; verify every sausage with a thermometer.",
+    "For a gluten-free meal, choose labeled GF sausages and stock, use GF buns, and avoid cross-contact with ordinary bread.",
+    "Scaling changes ingredients only. Brown sausages in uncrowded batches and use a larger baking dish or additional dishes."
+  ],
+  "servingInstructions": "Serve the sausage, peppers, and onions in warm rolls, or plate them without bread. Spoon over the pan juices and finish with parsley if desired."
+}

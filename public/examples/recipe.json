@@ -1,0 +1,293 @@
+{
+  "schemaVersion": 1,
+  "id": "spinach-mushroom-baked-ziti",
+  "name": "Spinach & Mushroom Baked Ziti",
+  "description": "A bubbling, golden-topped pasta bake with tender spinach, deeply browned mushrooms, and little pockets of creamy ricotta. Comfort food for everyone at the table.",
+  "category": "Weeknight favorites",
+  "tags": [
+    "Pasta",
+    "Oven-baked",
+    "Family style"
+  ],
+  "dietaryTags": [
+    "Gluten-free",
+    "Vegetarian"
+  ],
+  "coverImage": "assets/images/ziti.jpg",
+  "servings": 6,
+  "servingDescription": "6 generous portions",
+  "prepMinutes": 25,
+  "cookMinutes": 30,
+  "totalMinutes": 65,
+  "components": [
+    {
+      "id": "pasta",
+      "name": "The pasta",
+      "description": "Gluten-free ziti, cooked just shy of tender."
+    },
+    {
+      "id": "filling",
+      "name": "Vegetables & sauce",
+      "description": "Browned mushrooms, wilted spinach, and a bright tomato sauce."
+    },
+    {
+      "id": "assembly",
+      "name": "The cheesy finish",
+      "description": "Ricotta, mozzarella, and vegetarian Parmesan-style cheese."
+    }
+  ],
+  "ingredients": [
+    {
+      "id": "pasta-ziti",
+      "componentId": "pasta",
+      "name": "Gluten-free ziti or penne",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Pantry",
+      "shoppingKey": "gf-ziti",
+      "quantity": 12,
+      "unit": "oz"
+    },
+    {
+      "id": "pasta-salt",
+      "componentId": "pasta",
+      "name": "Fine salt",
+      "optional": false,
+      "scalable": false,
+      "groceryCategory": "Pantry",
+      "shoppingKey": "fine-salt",
+      "quantityText": "for the pasta water"
+    },
+    {
+      "id": "sauce-oil",
+      "componentId": "filling",
+      "name": "Olive oil",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Pantry",
+      "shoppingKey": "olive-oil",
+      "quantity": 1,
+      "unit": "tbsp"
+    },
+    {
+      "id": "sauce-mushrooms",
+      "componentId": "filling",
+      "name": "Cremini mushrooms",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Produce",
+      "shoppingKey": "cremini-mushrooms",
+      "quantity": 8,
+      "unit": "oz",
+      "preparation": "Sliced"
+    },
+    {
+      "id": "sauce-garlic",
+      "componentId": "filling",
+      "name": "Garlic",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Produce",
+      "shoppingKey": "garlic",
+      "quantity": 3,
+      "unit": "cloves",
+      "preparation": "Minced"
+    },
+    {
+      "id": "sauce-spinach",
+      "componentId": "filling",
+      "name": "Baby spinach",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Produce",
+      "shoppingKey": "baby-spinach",
+      "quantity": 5,
+      "unit": "oz"
+    },
+    {
+      "id": "sauce-marinara",
+      "componentId": "filling",
+      "name": "Marinara sauce",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Pantry",
+      "shoppingKey": "marinara",
+      "quantity": 24,
+      "unit": "oz",
+      "preparation": "Check gluten-free label"
+    },
+    {
+      "id": "sauce-oregano",
+      "componentId": "filling",
+      "name": "Dried oregano",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Pantry",
+      "shoppingKey": "dried-oregano",
+      "quantity": 1,
+      "unit": "tsp"
+    },
+    {
+      "id": "sauce-pepper",
+      "componentId": "filling",
+      "name": "Black pepper",
+      "optional": false,
+      "scalable": false,
+      "groceryCategory": "Pantry",
+      "shoppingKey": "black-pepper",
+      "quantityText": "to taste"
+    },
+    {
+      "id": "assembly-ricotta",
+      "componentId": "assembly",
+      "name": "Ricotta",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Dairy",
+      "shoppingKey": "ricotta",
+      "quantity": 15,
+      "unit": "oz"
+    },
+    {
+      "id": "assembly-mozzarella",
+      "componentId": "assembly",
+      "name": "Mozzarella",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Dairy",
+      "shoppingKey": "mozzarella",
+      "quantity": 8,
+      "unit": "oz",
+      "preparation": "Shredded; divide between filling and topping"
+    },
+    {
+      "id": "assembly-parmesan",
+      "componentId": "assembly",
+      "name": "Vegetarian Parmesan-style cheese",
+      "optional": false,
+      "scalable": true,
+      "groceryCategory": "Dairy",
+      "shoppingKey": "vegetarian-parmesan",
+      "quantity": 0.25,
+      "unit": "cup",
+      "preparation": "Finely grated; vegetarian rennet"
+    },
+    {
+      "id": "assembly-basil",
+      "componentId": "assembly",
+      "name": "Fresh basil",
+      "optional": true,
+      "scalable": true,
+      "groceryCategory": "Produce",
+      "shoppingKey": "fresh-basil",
+      "quantity": 0.25,
+      "unit": "cup",
+      "preparation": "Torn, to finish"
+    }
+  ],
+  "events": [
+    {
+      "id": "heat-oven-water",
+      "startMinute": 0,
+      "title": "Get the oven and water going",
+      "instruction": "Heat the oven to 375°F and lightly oil a 9 × 13-inch baking dish. Bring a large pot of water to a boil. Set a colander in the sink and gather the pasta and cheeses.",
+      "track": "Pasta & oven",
+      "approximate": true,
+      "durationMinutes": 10,
+      "temperature": "Oven: 375°F / 190°C"
+    },
+    {
+      "id": "brown-mushrooms",
+      "startMinute": 0,
+      "title": "Brown the mushrooms",
+      "instruction": "Heat the olive oil in a large skillet over medium-high heat. Add sliced mushrooms in an even layer. Let them color before stirring, then cook until browned and their moisture has evaporated, about 8–10 minutes.",
+      "track": "Vegetables",
+      "approximate": true,
+      "durationMinutes": 10,
+      "componentId": "filling",
+      "timerMinutes": 8
+    },
+    {
+      "id": "boil-pasta",
+      "startMinute": 10,
+      "title": "Cook the pasta just short of done",
+      "instruction": "Salt the boiling water and add the pasta. Cook 2 minutes less than the package’s al dente time, stirring gently. Check early: gluten-free pasta can soften quickly. Drain without rinsing. The 8-minute timer is only a starting point; follow your pasta’s timing.",
+      "track": "Pasta",
+      "approximate": true,
+      "durationMinutes": 10,
+      "componentId": "pasta",
+      "timerMinutes": 8,
+      "doneness": "Flexible with a firm center; it will finish in the oven."
+    },
+    {
+      "id": "finish-sauce",
+      "startMinute": 10,
+      "title": "Build the spinach and tomato sauce",
+      "instruction": "Lower the skillet to medium. Add garlic and oregano to the mushrooms and stir for 30 seconds. Add spinach in handfuls until wilted, then stir in marinara and black pepper. Simmer gently for 5 minutes.",
+      "track": "Vegetables",
+      "approximate": true,
+      "durationMinutes": 10,
+      "componentId": "filling",
+      "timerMinutes": 5
+    },
+    {
+      "id": "assemble",
+      "startMinute": 20,
+      "title": "Layer in the good things",
+      "instruction": "Fold drained pasta into the sauce with half the mozzarella. Spread half in the prepared baking dish. Dollop with half the ricotta, then repeat with the remaining pasta and ricotta. Scatter the remaining mozzarella and Parmesan-style cheese over the top.",
+      "track": "Assembly",
+      "approximate": true,
+      "durationMinutes": 5,
+      "componentId": "assembly"
+    },
+    {
+      "id": "bake",
+      "startMinute": 25,
+      "title": "Bake until bubbling",
+      "instruction": "Cover loosely with foil and bake for 20 minutes. Remove the foil carefully, then continue baking uncovered for about 10 minutes until the edges bubble and the cheese melts and colors.",
+      "track": "Oven",
+      "approximate": true,
+      "durationMinutes": 30,
+      "componentId": "assembly",
+      "timerMinutes": 20,
+      "temperature": "375°F / 190°C",
+      "doneness": "Hot throughout; the center should reach 165°F / 74°C."
+    },
+    {
+      "id": "uncover",
+      "startMinute": 45,
+      "title": "Uncover for a golden top",
+      "instruction": "Remove the foil and bake for about 10 more minutes. If the top colors before the middle is hot, loosely replace the foil and continue baking.",
+      "track": "Oven",
+      "approximate": true,
+      "durationMinutes": 10,
+      "componentId": "assembly",
+      "timerMinutes": 10
+    },
+    {
+      "id": "rest",
+      "startMinute": 55,
+      "title": "Let the pasta settle",
+      "instruction": "Check that the center is hot throughout. Remove from the oven and rest for 10 minutes so the sauce settles around the pasta. Finish with optional torn basil.",
+      "track": "Finishing",
+      "approximate": true,
+      "durationMinutes": 10,
+      "timerMinutes": 10,
+      "doneness": "Center: 165°F / 74°C; sauce bubbling around the edges."
+    },
+    {
+      "id": "serve",
+      "startMinute": 65,
+      "title": "Scoop and share",
+      "instruction": "Serve in generous scoops, making sure each portion gets a little golden cheese and ricotta.",
+      "track": "Finishing",
+      "approximate": true
+    }
+  ],
+  "notes": [
+    "Choose pasta, marinara, and seasonings labeled gluten-free. For a vegetarian dish, check the rennet used in all cheeses.",
+    "The pasta cook time depends on its brand and shape. Underboil it slightly so it holds its shape during baking.",
+    "Scaling changes ingredients only. Keep a similar depth in the baking dish, use additional dishes as needed, and check the center rather than doubling the bake time."
+  ],
+  "servingInstructions": "Rest for 10 minutes, then finish with basil if using and serve warm from the baking dish."
+}

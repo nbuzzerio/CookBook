@@ -1,0 +1,88 @@
+import { chromium, expect } from '@playwright/test';
+import fs from 'node:fs/promises';
+import assert from 'node:assert/strict';
+
+const base=process.env.COUNTERTOP_URL||'http://127.0.0.1:5173/';
+const recipe=JSON.parse(await fs.readFile('src/data/recipes/mushroom-meatloaf-dinner.json','utf8'));
+const browser=await chromium.launch({channel:'chrome',headless:true});
+const context=await browser.newContext({viewport:{width:360,height:800}});
+const page=await context.newPage();
+const errors=[];
+page.on('pageerror',error=>errors.push(error.message));
+await page.goto(`${base}#/recipe/${recipe.id}/ingredients`);
+await page.locator('.ingredient-check input').first().check();
+await page.getByRole('button',{name:'Cook',exact:true}).click();
+await page.getByRole('button',{name:'Begin cooking',exact:true}).click();
+await page.getByRole('button',{name:'Start timer for Put the lentils on',exact:true}).click();
+await page.locator('.cook-step-link').filter({hasText:'Cook away the mushroom moisture'}).click();
+await page.getByRole('button',{name:'Start timer for Cook away the mushroom moisture',exact:true}).click();
+await expect(page.locator('.cook-live-timer')).toHaveCount(2);
+await page.getByRole('button',{name:'Pause timer for Put the lentils on',exact:true}).click();
+await page.evaluate((id)=>{
+  const key=`countertop:v1:session:${id}`;
+  const record=JSON.parse(localStorage.getItem(key));
+  record.value.timers['saute-mushrooms'].startedAt=Date.now()-13*60_000;
+  localStorage.setItem(key,JSON.stringify(record));
+},recipe.id);
+await page.reload();
+await expect(page.locator('.cook-live-timer.is-finished')).toHaveCount(1);
+assert.match(await page.locator('.cook-live-timer').filter({hasText:'Put the lentils on'}).innerText(),/Timer paused/);
+await page.getByRole('button',{name:'Restart timer for Cook away the mushroom moisture',exact:true}).first().click();
+await expect(page.locator('.cook-live-timer.is-finished')).toHaveCount(0);
+page.once('dialog',d=>d.accept());
+await page.getByRole('button',{name:'Reset cooking session',exact:true}).click();
+await expect(page.locator('.cook-live-timer')).toHaveCount(0);
+await page.getByRole('button',{name:'Ingredients',exact:true}).click();
+await expect(page.locator('.ingredient-check input').first()).toBeChecked();
+await page.getByRole('button',{name:'Add to shopping list',exact:true}).click();
+await page.locator('.mobile-nav').getByRole('link',{name:'Shopping list'}).click();
+const item=page.locator('.shopping-item').filter({hasText:'Yellow onion'}).first();
+await item.locator('input').check();
+await page.getByRole('button',{name:'Clear purchased',exact:true}).click();
+await expect(item).toHaveCount(0);
+await page.getByRole('button',{name:/More servings of/}).click();
+await expect(item).toHaveCount(1);
+await expect(item.locator('input')).not.toBeChecked();
+
+await page.locator('.mobile-nav').getByRole('link',{name:'Settings',exact:true}).click();
+const incoming={...recipe,id:'imported-long-name',name:'A'.repeat(180),description:'<img src=x onerror="alert(1)"> A real imported recipe.',coverImage:undefined};
+await page.getByLabel('Import recipe JSON file').setInputFiles({name:`${'a'.repeat(150)}.json`,mimeType:'application/json',buffer:Buffer.from(JSON.stringify(incoming))});
+await page.getByRole('region',{name:'Review recipe import'}).waitFor();
+assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'Long import preview overflows');
+await page.getByRole('region',{name:'Review recipe import'}).getByRole('button',{name:'Import recipes'}).click();
+await expect(page.locator('.data-imported-list li')).toHaveCount(4);
+for(const route of ['/',`/recipe/${incoming.id}/overview`,`/recipe/${incoming.id}/ingredients`,`/recipe/${incoming.id}/timeline`,`/recipe/${incoming.id}/cook`]) {
+  await page.goto(`${base}#${route}`);
+  await page.locator('main').waitFor();
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,`Long import overflows ${route}`);
+  assert.equal(await page.locator('img[src="x"]').count(),0,'Imported text interpreted as HTML');
+}
+await page.goto(`${base}#/settings`);
+page.once('dialog',d=>d.accept());
+await page.getByRole('button',{name:`Remove ${incoming.name}`,exact:true}).click();
+await expect(page.locator('.data-imported-list li')).toHaveCount(3);
+page.once('dialog',d=>d.accept());
+await page.getByRole('button',{name:`Remove ${recipe.name}`,exact:true}).click();
+await page.locator('.mobile-nav').getByRole('link',{name:'Shopping list'}).click();
+await expect(page.locator('.shopping-empty')).toBeVisible();
+await page.locator('.mobile-nav').getByRole('link',{name:'Settings',exact:true}).click();
+await page.getByRole('button',{name:'Restore sample recipes',exact:true}).click();
+await expect(page.locator('.data-imported-list li')).toHaveCount(3);
+
+const quotaContext=await browser.newContext();
+await quotaContext.addInitScript(()=>{Storage.prototype.setItem=function(){throw new DOMException('Storage full','QuotaExceededError');};});
+const quotaPage=await quotaContext.newPage();
+await quotaPage.goto(base);
+await quotaPage.locator('.favorite-button').first().click();
+await expect(quotaPage.locator('.storage-warning')).toContainText('could not be saved');
+await expect(quotaPage.locator('.favorite-button').first()).toHaveAttribute('aria-pressed','true');
+
+const unavailableContext=await browser.newContext();
+await unavailableContext.addInitScript(()=>Object.defineProperty(window,'localStorage',{get(){throw new DOMException('Denied','SecurityError');}}));
+const unavailablePage=await unavailableContext.newPage();
+await unavailablePage.goto(base);
+await expect(unavailablePage.locator('.recipe-card')).toHaveCount(3);
+await expect(unavailablePage.locator('.storage-warning')).toContainText('unavailable');
+assert.deepEqual(errors,[]);
+await browser.close();
+console.log('PASS: concurrent timers, independent pause, expired recovery and restart, reset isolation, quantity-change shopping checks, long text/import overflow, safe imported markup, removal/restore cleanup, quota failure, and unavailable storage.');

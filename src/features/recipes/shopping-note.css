@@ -1,0 +1,65 @@
+.shopping-note {
+  min-width: 0;
+  margin-top: 23px;
+  padding-top: 17px;
+  border-top: 1px solid var(--line);
+}
+
+.shopping-note-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2px 10px;
+}
+
+.shopping-note-heading h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.5;
+}
+
+.shopping-note-heading h3 svg { color: var(--sage-dark); }
+.shopping-note .text-button { min-height: 44px; font-size: 12px; padding: 0 4px; }
+.shopping-note-description { color: var(--muted); font-size: 12px; margin: 3px 0 13px; }
+.shopping-note-form { margin-top: 15px; }
+.shopping-note-form label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 9px; }
+
+.shopping-note-form textarea {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-height: 120px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.7;
+  resize: vertical;
+}
+
+.shopping-note-form textarea::placeholder { color: var(--muted); opacity: .9; }
+.shopping-note-limit { margin-top: 7px; color: var(--muted); font-size: 11px; text-align: right; font-variant-numeric: tabular-nums; }
+.shopping-note-actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 13px; }
+.shopping-note-actions .btn { min-height: 44px; padding: 11px 14px; font-size: 12px; }
+.shopping-note-text { padding: 13px 15px; border-left: 2px solid var(--sage-dark); border-radius: 0 4px 4px 0; background: var(--sage); color: var(--ink); font-size: 13px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.shopping-note .shopping-note-remove { color: var(--muted); margin-top: 3px; }
+.shopping-note-storage { font-size: 11px; line-height: 1.7; color: var(--muted); margin-top: 12px; }
+.shopping-note-feedback { display: flex; align-items: center; flex-wrap: wrap; gap: 0 12px; color: var(--sage-dark); font-size: 12px; }
+.shopping-note-feedback p:not(:empty) { margin-top: 10px; }
+.shopping-note-feedback .text-button { margin-top: 3px; }
+
+@media (max-width: 650px) {
+  .shopping-note-form textarea { font-size: 16px; }
+}
+
+@media print {
+  .shopping-note { display: none; }
+}
