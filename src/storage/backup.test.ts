@@ -69,6 +69,19 @@ describe('full cookbook storage transactions', () => {
     expect(target.getItem(RESTORE_JOURNAL_KEY)).toBeNull();
   });
 
+  it.each([true, false])('recovers a cross-store restore when the IndexedDB commit is %s', committed => {
+    const storage = new MemoryStorage();
+    save(storage, 'recipes', []);
+    save(storage, 'favorites', []);
+    const id = crypto.randomUUID();
+    restoreFullBackup(createFullBackup(current(), new MemoryStorage(), now), storage, id);
+    expect(storage.getItem(RESTORE_JOURNAL_KEY)).toBeTruthy();
+    expect(recoverInterruptedRestore(storage, committed ? id : undefined)).toBe('recovered');
+    expect(load(storage, 'favorites')).toEqual(committed ? [recipe.id] : []);
+    expect(load(storage, 'recipes')).toEqual([]);
+    expect(storage.getItem(RESTORE_JOURNAL_KEY)).toBeNull();
+  });
+
   it('rejects invalid input before touching storage', () => {
     const storage = new MemoryStorage();
     save(storage, 'recipes', []);

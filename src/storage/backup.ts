@@ -4,10 +4,12 @@ import { STORAGE_PREFIX, reportStorageWarning } from './persistence';
 
 type BackupStorage = Pick<Storage, 'getItem' | 'setItem' | 'removeItem' | 'key' | 'length'>;
 export type CurrentCookbook = Pick<BackupState, 'recipes' | 'favorites' | 'theme' | 'shoppingPlan' | 'servings' | 'shoppingNotes'>;
+export const LIBRARY_GENERATION_KEY = STORAGE_PREFIX + 'library-generation';
 export const RESTORE_JOURNAL_KEY = `${STORAGE_PREFIX}restore-journal`;
 export class RestoreRecoveryRequired extends Error {}
 const journalSchema = z.object({
   version: z.literal(1),
+  restoreId: z.string().optional(),
   entries: z.array(z.tuple([
     z.string().startsWith(STORAGE_PREFIX).refine(key => key !== RESTORE_JOURNAL_KEY),
     z.string(),
@@ -78,19 +80,29 @@ function replaceEntries(storage: BackupStorage, entries: [string, string][]): vo
 }
 
 /** Keep a rollback journal until the entire namespace has been written successfully. */
-export function restoreFullBackup(input: CookbookBackup, storage: BackupStorage = window.localStorage): void {
+export function restoreFullBackup(input: CookbookBackup, storage: BackupStorage = window.localStorage, restoreId?: string): void {
   const backup = pauseBackupSessions(backupSchema.parse(input));
   serializeBackup(backup);
+  replaceDeviceEntries(entriesForBackup(backup), storage, restoreId);
+}
+
+/** Coordinate the device-local half of a restore or an explicit Space switch. */
+export function replaceDeviceEntries(entries: [string, string][], storage: BackupStorage, restoreId?: string) {
   if (storage.getItem(RESTORE_JOURNAL_KEY) !== null) {
-    throw new RestoreRecoveryRequired('An earlier restore needs recovery. Reload Countertop before restoring another backup.');
+    throw new RestoreRecoveryRequired('An earlier restore needs recovery. Reload Countertop before making more changes.');
   }
   const original = ownedEntries(storage);
-  const journal = JSON.stringify(journalSchema.parse({ version: 1, entries: original }));
+  const journal = JSON.stringify(journalSchema.parse({ version: 1, entries: original, restoreId }));
   try { storage.setItem(RESTORE_JOURNAL_KEY, journal); }
   catch { throw new Error('There is not enough available browser storage to restore safely. Your current cookbook has not changed. Free some browser storage or restore in another browser.'); }
   try {
-    replaceEntries(storage, entriesForBackup(backup));
-    storage.removeItem(RESTORE_JOURNAL_KEY);
+    if (restoreId) {
+      const legacy = (key: string) => key === STORAGE_PREFIX + 'recipes' || key === STORAGE_PREFIX + 'shopping-notes';
+      replaceEntries(storage, [...original.filter(([key]) => legacy(key)), ...entries.filter(([key]) => !legacy(key) && key !== LIBRARY_GENERATION_KEY), [LIBRARY_GENERATION_KEY, restoreId]]);
+    } else {
+      replaceEntries(storage, entries);
+      storage.removeItem(RESTORE_JOURNAL_KEY);
+    }
   } catch {
     try {
       replaceEntries(storage, original);
@@ -103,7 +115,7 @@ export function restoreFullBackup(input: CookbookBackup, storage: BackupStorage 
 }
 
 /** Run before React reads any saved state. An unfinished transaction always rolls back. */
-export function recoverInterruptedRestore(storage?: BackupStorage): 'none' | 'recovered' | 'failed' {
+export function recoverInterruptedRestore(storage?: BackupStorage, committedId?: string): 'none' | 'recovered' | 'failed' {
   let target: BackupStorage;
   let raw: string | null;
   try {
@@ -113,6 +125,7 @@ export function recoverInterruptedRestore(storage?: BackupStorage): 'none' | 're
   if (raw === null) return 'none';
   try {
     const journal = journalSchema.parse(JSON.parse(raw));
+    if (committedId && journal.restoreId === committedId) { target.removeItem(RESTORE_JOURNAL_KEY); return 'recovered'; }
     replaceEntries(target, journal.entries);
     target.removeItem(RESTORE_JOURNAL_KEY);
     reportStorageWarning('An interrupted backup restore was rolled back. Your previous cookbook is available.');

@@ -103,9 +103,9 @@ for(const width of [360,390,430,600,768,900,1024,1440]) {
 await page.setViewportSize({width:390,height:844});
 await page.goto(`${base}#/settings`);
 await page.getByRole('radio',{name:'Dark',exact:true}).check();
-assert.equal(await page.locator('html').getAttribute('data-theme'),'dark');
+await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
 await page.reload();
-assert.equal(await page.locator('html').getAttribute('data-theme'),'dark');
+await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
 await shot('390-dark-settings');
 await context.setOffline(true);
 await page.locator('.mobile-nav').getByRole('link',{name:'Library',exact:true}).click();

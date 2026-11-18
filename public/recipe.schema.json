@@ -102,7 +102,7 @@
           "id",
           "name"
         ],
-        "additionalProperties": false
+        "additionalProperties": {}
       }
     },
     "ingredients": {
@@ -181,7 +181,7 @@
           "groceryCategory",
           "shoppingKey"
         ],
-        "additionalProperties": false
+        "additionalProperties": {}
       }
     },
     "events": {
@@ -254,7 +254,7 @@
           "instruction",
           "track"
         ],
-        "additionalProperties": false
+        "additionalProperties": {}
       }
     },
     "notes": {
@@ -290,7 +290,7 @@
     "notes",
     "servingInstructions"
   ],
-  "additionalProperties": false,
+  "additionalProperties": {},
   "title": "Countertop recipe · version 1",
   "$comment": "Generated from src/domain/schema.ts. Zod runtime validation additionally checks reserved and unique IDs, component references, safe image paths, text-only quantity rules, and timeline bounds. Do not edit this generated file directly."
 }

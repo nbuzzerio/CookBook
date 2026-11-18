@@ -25,7 +25,7 @@ export const ingredientSchema = z.object({
   scalable: z.boolean(),
   groceryCategory: z.enum(['Produce', 'Meat', 'Dairy', 'Pantry', 'Bakery', 'Other']),
   shoppingKey: id,
-}).strict().superRefine((ingredient, ctx) => {
+}).passthrough().superRefine((ingredient, ctx) => {
   if (ingredient.quantity === undefined && !ingredient.quantityText) {
     ctx.addIssue({code: z.ZodIssueCode.custom, path: ['quantity'], message: 'Supply a numerical quantity or quantityText such as "to taste"'});
   }
@@ -46,7 +46,7 @@ export const cookingEventSchema = z.object({
   temperature: z.string().trim().min(1).max(300).optional(),
   doneness: text.optional(),
   approximate: z.boolean().optional(),
-}).strict();
+}).passthrough();
 
 export const recipeSchema = z.object({
   schemaVersion: z.literal(1),
@@ -62,12 +62,12 @@ export const recipeSchema = z.object({
   prepMinutes: minutes,
   cookMinutes: minutes,
   totalMinutes: z.number().finite().positive().max(10080),
-  components: z.array(z.object({id, name: z.string().trim().min(1).max(100), description: text.optional()}).strict()).min(1).max(30),
+  components: z.array(z.object({id, name: z.string().trim().min(1).max(100), description: text.optional()}).passthrough()).min(1).max(30),
   ingredients: z.array(ingredientSchema).min(1).max(300),
   events: z.array(cookingEventSchema).min(1).max(200),
   notes: z.array(text).max(50),
   servingInstructions: text,
-}).strict().superRefine((recipe, ctx) => {
+}).passthrough().superRefine((recipe, ctx) => {
   for (const field of ['components', 'ingredients', 'events'] as const) {
     const seen = new Set<string>();
     recipe[field].forEach((entry, index) => {

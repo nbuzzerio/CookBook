@@ -1,7 +1,8 @@
-import { useRef, useState, type ChangeEvent, type Dispatch, type SetStateAction } from 'react';
+import { useEffect, useRef, useState, type ChangeEvent, type SetStateAction } from 'react';
 import { AlertCircle, ArrowDownToLine, ArrowUpFromLine, BookOpen, Check, FileJson, HardDrive, Monitor, Moon, RotateCcw, ShieldCheck, Sun, Trash2, X } from 'lucide-react';
 import { recipeCollectionSchema, type Recipe } from '../../domain/schema';
 import { exportRecipes, MAX_IMPORT_BYTES, mergeRecipes, parseRecipeImport, validateCollectionSize } from '../../domain/importExport';
+import { SyncSettings } from '../../sync/SyncSettings';
 import { FullBackup } from './FullBackup';
 import type { CookbookBackup } from '../../domain/backup';
 import { sampleRecipes } from '../../data';
@@ -13,7 +14,7 @@ type Props = {
   onBackupExport: () => void;
   onBackupRestore: (backup: CookbookBackup) => void;
   recipes: Recipe[];
-  setRecipes: Dispatch<SetStateAction<Recipe[]>>;
+  setRecipes: (next: SetStateAction<Recipe[]>) => Promise<void>;
   theme: Theme;
   setTheme: (theme: Theme) => void;
   onReset: () => void;
@@ -25,7 +26,8 @@ export function DataSettings({ restored, onBackupExport, onBackupRestore, recipe
   const [filename, setFilename] = useState('');
   const [behavior, setBehavior] = useState<'skip' | 'replace'>('skip');
   const [error, setError] = useState('');
-  const [notice, setNotice] = useState(restored ? 'Full cookbook restored. Saved cooking clocks and timers are paused; resume them when you are ready.' : '');
+  const [notice, setNotice] = useState('');
+  useEffect(() => { if (restored) setNotice('Full cookbook restored. Saved cooking clocks and timers are paused; resume them when you are ready.'); }, [restored]);
   const [reading, setReading] = useState(false);
   const missingExamples = sampleRecipes.filter(sample => !recipes.some(recipe => recipe.id === sample.id));
   const seenIds = new Set(recipes.map(recipe => recipe.id));
@@ -46,7 +48,7 @@ export function DataSettings({ restored, onBackupExport, onBackupRestore, recipe
     } finally { setReading(false); }
   }
 
-  function applyImport() {
+  async function applyImport() {
     if (!incoming || !preview) return;
     const validated = recipeCollectionSchema.safeParse({ schemaVersion: 1, recipes: preview.recipes });
     if (!validated.success) {
@@ -56,7 +58,7 @@ export function DataSettings({ restored, onBackupExport, onBackupRestore, recipe
     try { validateCollectionSize(preview.recipes); }
     catch (cause) { setError(cause instanceof Error ? cause.message : 'The combined collection is too large.'); return; }
     setError('');
-    setRecipes(preview.recipes);
+    try { await setRecipes(preview.recipes); } catch (e) { setError(String(e)); return; }
     setNotice(`Import complete. ${preview.added} added, ${preview.replaced} replaced, ${preview.skipped} skipped.`);
     setIncoming(null);
   }
@@ -74,13 +76,13 @@ export function DataSettings({ restored, onBackupExport, onBackupRestore, recipe
     } catch { setError('The download could not be created. Please try again.'); }
   }
 
-  function removeRecipe(recipe: Recipe) {
-    if (!window.confirm(`Remove “${recipe.name}” from your cookbook? Its personal shopping note and cooking progress will also be removed. Recipe exports do not include personal shopping notes.`)) return;
-    setRecipes(previous => previous.filter(existing => existing.id !== recipe.id));
+  async function removeRecipe(recipe: Recipe) {
+    if (!window.confirm(`Remove “${recipe.name}” from your cookbook? Its personal shopping note and cooking progress will also be removed. Connected devices will receive a deletion for a shared recipe. Recipe exports do not include personal shopping notes.`)) return;
+    try { await setRecipes(previous => previous.filter(existing => existing.id !== recipe.id)); } catch (e) { setError(String(e)); return; }
     setNotice(`“${recipe.name}” removed from your cookbook.`);
   }
 
-  function restoreExamples() {
+  async function restoreExamples() {
     const restored = mergeRecipes(recipes, sampleRecipes, 'skip');
     const validated = recipeCollectionSchema.safeParse({ schemaVersion: 1, recipes: restored.recipes });
     if (!validated.success) {
@@ -90,7 +92,7 @@ export function DataSettings({ restored, onBackupExport, onBackupRestore, recipe
     try { validateCollectionSize(restored.recipes); }
     catch (cause) { setError(cause instanceof Error ? cause.message : 'The combined collection is too large.'); return; }
     setError('');
-    setRecipes(restored.recipes);
+    try { await setRecipes(restored.recipes); } catch (e) { setError(String(e)); return; }
     setNotice(`${restored.added} ${restored.added === 1 ? 'example recipe' : 'example recipes'} restored to your cookbook.`);
   }
 
@@ -98,6 +100,7 @@ export function DataSettings({ restored, onBackupExport, onBackupRestore, recipe
     <header className="data-heading"><p className="eyebrow">A COOKBOOK THAT’S YOURS</p><h1>Make yourself at home.</h1><p>Your recipes, your preferences, and a little peace of mind.</p></header>
     <div className="data-layout">
       <div className="data-main">
+        <SyncSettings onBackup={onBackupExport}/>
         <section className="data-section card" aria-labelledby="recipe-data-title">
           <div className="data-section-title"><span className="data-section-icon"><BookOpen size={20} /></span><div><h2 id="recipe-data-title">Your recipe collection</h2><p>{recipes.length} {recipes.length === 1 ? 'recipe' : 'recipes'}, kept right in this browser.</p></div></div>
           <div className="data-transfer-grid">
@@ -110,7 +113,7 @@ export function DataSettings({ restored, onBackupExport, onBackupRestore, recipe
           {incoming && preview && <section className="data-import-preview" aria-label="Review recipe import">
             <p className="eyebrow">READY TO BRING INTO YOUR COOKBOOK</p><h3>{incoming.length} {incoming.length === 1 ? 'recipe' : 'recipes'} found</h3><p className="data-filename"><FileJson size={15} />{filename}</p>
             <ul>{incoming.map((recipe, index) => <li key={`${recipe.id}-${index}`}><span>{recipe.name}</span>{recipes.some(existing => existing.id === recipe.id) && <span className="data-existing-tag">Already in library</span>}</li>)}</ul>
-            {duplicateCount > 0 && <fieldset className="data-duplicate-options"><legend>{duplicateCount} {duplicateCount === 1 ? 'entry shares' : 'entries share'} a recipe ID with your library or this file. How should we handle them?</legend><label><input type="radio" name="duplicate-behavior" value="skip" checked={behavior === 'skip'} onChange={() => setBehavior('skip')} /><span><strong>Keep existing recipes</strong><small>Skip matching IDs. For repeated IDs in this file, keep the first entry.</small></span></label><label><input type="radio" name="duplicate-behavior" value="replace" checked={behavior === 'replace'} onChange={() => setBehavior('replace')} /><span><strong>Replace matching recipes</strong><small>Use the file’s recipe for matching IDs and reset its ingredient and cooking progress. For repeated IDs, use the last entry.</small></span></label></fieldset>}
+            {duplicateCount > 0 && <fieldset className="data-duplicate-options"><legend>{duplicateCount} {duplicateCount === 1 ? 'entry shares' : 'entries share'} a recipe ID with your library or this file. How should we handle them?</legend><label><input type="radio" name="duplicate-behavior" value="skip" checked={behavior === 'skip'} onChange={() => setBehavior('skip')} /><span><strong>Keep existing recipes</strong><small>Skip matching IDs. For repeated IDs in this file, keep the first entry.</small></span></label><label><input type="radio" name="duplicate-behavior" value="replace" checked={behavior === 'replace'} onChange={() => setBehavior('replace')} /><span><strong>Replace matching recipes</strong><small>Use the file’s recipe for matching IDs and share the replacement if sync is connected. For repeated IDs, use the last entry.</small></span></label></fieldset>}
             <p className="data-import-counts">{preview.added} new · {preview.replaced} replacements · {preview.skipped} skipped</p><div className="data-preview-actions"><button className="btn btn-primary" onClick={applyImport}>Import recipes <Check size={16} /></button><button className="btn btn-secondary" onClick={() => setIncoming(null)}>Cancel</button></div>
           </section>}
           <div className="data-format-note"><FileJson size={18} /><p>Recipes use Countertop’s version 1 JSON format. <a href={`${import.meta.env.BASE_URL}examples/recipe.json`} download="countertop-example-recipe.json">Download a complete example</a> to use as a starting point.</p></div>
@@ -129,7 +132,7 @@ export function DataSettings({ restored, onBackupExport, onBackupRestore, recipe
         <section className="data-reset-section"><div><h2>A fresh start</h2><p>Reset this browser’s recipes, favorites, checklists, shopping list, personal shopping notes, and cooking sessions. The three sample recipes will return.</p></div><button className="btn btn-secondary" onClick={() => { if (window.confirm('Reset all Countertop data in this browser? This removes imported recipes, favorites, checklists, shopping selections, personal shopping notes, cooking sessions, and preferences. Download a full cookbook backup first to keep your recipes and progress. This cannot be undone.')) onReset(); }}><RotateCcw size={16} />Reset all data</button></section>
       </div>
 
-      <aside className="data-sidebar"><section className="data-backup-note"><HardDrive size={24} strokeWidth={1.4} /><p className="eyebrow">A NOTE ON KEEPING THINGS</p><h2>Save a copy.<br />Keep your place.</h2><p>Your cookbook lives only in this browser. Clearing browser data, using private browsing, or changing devices can remove it.</p><p>Download a full cookbook backup regularly and keep the JSON file somewhere safe. Restore it to bring back recipes, personal notes, and progress together.</p><button className="btn btn-secondary" onClick={()=>{const section=document.getElementById('full-cookbook-backup');section?.scrollIntoView({block:'start'});section?.querySelector<HTMLButtonElement>('button')?.focus({preventScroll:true});}}><ArrowDownToLine size={16} />Full backup options</button><small>Recipe-only exports contain recipes. Use Full cookbook backup to include personal notes, checklists, favorites, shopping selections, preferences, and saved cooking sessions.</small></section><section className="data-about"><ShieldCheck size={20} /><h3>Made for your kitchen.</h3><p>No accounts. No tracking. Just your recipes and the tools to cook them well.</p><p>Countertop <span>v0.1</span></p><small>Cooking timers keep time while you’re away and restore on refresh. Keep this page open for visible alerts; notifications are not sent when the browser is closed.</small></section></aside>
+      <aside className="data-sidebar"><section className="data-backup-note"><HardDrive size={24} strokeWidth={1.4} /><p className="eyebrow">A NOTE ON KEEPING THINGS</p><h2>Save a copy.<br />Keep your place.</h2><p>Your cookbook is saved in this browser. Connected devices also receive shared recipes. Clearing browser data, using private browsing, or changing devices can remove it.</p><p>Download a full cookbook backup regularly and keep the JSON file somewhere safe. Restore it to bring back recipes, personal notes, and progress together.</p><button className="btn btn-secondary" onClick={()=>{const section=document.getElementById('full-cookbook-backup');section?.scrollIntoView({block:'start'});section?.querySelector<HTMLButtonElement>('button')?.focus({preventScroll:true});}}><ArrowDownToLine size={16} />Full backup options</button><small>Recipe-only exports contain recipes. Use Full cookbook backup to include personal notes, checklists, favorites, shopping selections, preferences, and saved cooking sessions.</small></section><section className="data-about"><ShieldCheck size={20} /><h3>Made for your kitchen.</h3><p>Cook offline and connect your household when you want to share recipes.</p><p>Countertop <span>v0.1</span></p><small>Cooking timers keep time while you’re away and restore on refresh. Keep this page open for visible alerts; notifications are not sent when the browser is closed.</small></section></aside>
     </div>
   </div>;
 }

@@ -1,17 +1,19 @@
 import { useState } from 'react';
 import { AlertCircle, Download, RotateCcw } from 'lucide-react';
 import { resetStorage, STORAGE_PREFIX } from './persistence';
+import { preserveDamagedRestore, recoveryExport, replaceFromBackup, resetBackup, snapshot } from '../sync/store';
+import { RESTORE_JOURNAL_KEY } from './backup';
 
 /** Keep failed recovery from editing partial data, with an escape route for damaged journals. */
 export function RestoreRecovery() {
   const [error, setError] = useState('');
 
-  function downloadRecovery() {
+  async function downloadRecovery() {
     setError('');
     try {
       const storage = window.localStorage;
       const entries = Object.keys(storage).filter(key => key.startsWith(STORAGE_PREFIX)).map(key => [key, storage.getItem(key)]);
-      const text = JSON.stringify({ format: 'countertop-recovery', version: 1, entries }, null, 2);
+      const text = JSON.stringify({ format: 'countertop-recovery', version: 1, entries, sync: await recoveryExport() }, null, 2);
       const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
       const link = document.createElement('a');
       link.href = url; link.download = 'countertop-recovery-data.json';
@@ -20,10 +22,16 @@ export function RestoreRecovery() {
     } catch { setError('Recovery data could not be read. Allow browser storage for this site, then retry.'); }
   }
 
-  function startFresh() {
+  async function startFresh() {
     if (!window.confirm('Start fresh? This removes all Countertop data in this browser, including the recovery copy. Save recovery data first if you need to keep it. You can then restore a previously downloaded full backup.')) return;
-    if (resetStorage()) window.location.reload();
-    else setError('Browser storage could not be cleared. Allow storage for this site, then retry.');
+    try {
+      if (snapshot()) {
+        await preserveDamagedRestore();
+        localStorage.removeItem(RESTORE_JOURNAL_KEY);
+        await replaceFromBackup(resetBackup());
+      } else if (!resetStorage()) throw new Error('Browser storage could not be cleared.');
+      window.location.reload();
+    } catch (e) { setError(String(e)); }
   }
 
   return <main className="empty-state" style={{ maxWidth: 680, margin: '40px auto' }}>

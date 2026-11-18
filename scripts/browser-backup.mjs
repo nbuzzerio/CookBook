@@ -1,3 +1,4 @@
+import { readLibrary, setRestoreFixture } from './browser-storage.mjs';
 import { chromium, expect } from '@playwright/test';
 import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
@@ -16,11 +17,19 @@ try {
   const page = await context.newPage();
   page.on('pageerror', error => errors.push(error.message));
   const snapshot = () => page.evaluate(prefix => Object.fromEntries(Object.entries(localStorage).filter(([key]) => key.startsWith(prefix)).sort(([a], [b]) => a.localeCompare(b))), prefix);
-  const read = key => page.evaluate(({ prefix, key }) => JSON.parse(localStorage.getItem(prefix + key))?.value, { prefix, key });
+  const read = async key => {
+    if (['recipes','shopping-notes'].includes(key)) {
+      const state = await readLibrary(page);
+      return key === 'recipes' ? state.recipes : state.privateNotes;
+    }
+    return readLocal(key);
+  };
+  const readLocal = key => page.evaluate(({ prefix, key }) => JSON.parse(localStorage.getItem(prefix + key))?.value, { prefix, key });
   const upload = async (value, name = 'countertop-full-backup.json') => page.getByLabel('Restore full cookbook backup file').setInputFiles({ name, mimeType: 'application/json', buffer: Buffer.from(typeof value === 'string' ? value : JSON.stringify(value)) });
   const panel = page.getByRole('region', { name: 'Full cookbook backup', exact: true });
   const preview = page.getByRole('region', { name: 'Review full cookbook restore', exact: true });
-  await page.goto(`${base}#/settings`);
+  await page.route(base, route => route.fulfill({contentType:'text/html', body:'<title>Migration fixture</title>'}), {times:1});
+  await page.goto(base);
   await page.evaluate(({ prefix, recipes, timedStep, note }) => {
     const save = (key, value) => localStorage.setItem(prefix + key, JSON.stringify({ version: 1, value }));
     const [recipe, other] = recipes;
@@ -36,6 +45,7 @@ try {
     save('dinner-timing', { serveAt: Math.ceil((Date.now() + 86_400_000) / 60_000) * 60_000 });
     localStorage.setItem('another-app:keep', 'untouched');
   }, { prefix, recipes, timedStep, note });
+  await page.goto(`${base}#/settings`);
   await page.reload();
   await page.goto(`${base}#/shopping`);
   await page.locator('.shopping-item input').first().check();
@@ -66,6 +76,7 @@ try {
     localStorage.setItem(prefix + 'theme', JSON.stringify({ version: 1, value: 'light' }));
     localStorage.setItem(prefix + 'shopping-notes', JSON.stringify({ version: 1, value: { [other.id]: 'This will be replaced.' } }));
   }, { prefix, other });
+  await setRestoreFixture(page, other);
   await page.reload();
   const beforeRestore = await snapshot();
   await upload(backup);

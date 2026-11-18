@@ -5,11 +5,14 @@ import './shopping-note.css';
 
 interface ShoppingNoteProps {
   value: string;
-  onSave: (note: string) => void;
+  onSave: (note: string, expected: string) => Promise<void>;
+  shared: boolean;
+  sharedReminder?: string;
 }
 
-export function ShoppingNote({ value, onSave }: ShoppingNoteProps) {
+export function ShoppingNote({ value, onSave, shared, sharedReminder }: ShoppingNoteProps) {
   const id = useId();
+  const [original, setOriginal] = useState(value);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(value);
   const [message, setMessage] = useState('');
@@ -27,6 +30,7 @@ export function ShoppingNote({ value, onSave }: ShoppingNoteProps) {
   }, [editing]);
 
   function beginEditing() {
+    setOriginal(value);
     setDraft(value);
     setMessage('');
     setRemovedNote(null);
@@ -38,25 +42,25 @@ export function ShoppingNote({ value, onSave }: ShoppingNoteProps) {
     setEditing(false);
   }
 
-  function save(event: FormEvent<HTMLFormElement>) {
+  async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const next = draft.trim();
     setRemovedNote(!next && value ? value : null);
-    onSave(next);
+    try { await onSave(next, original); } catch (e) { setMessage(String(e)); return; }
     setMessage(next ? 'Shopping note saved.' : 'Shopping note removed.');
     finishEditing();
   }
 
-  function remove() {
+  async function remove() {
     setRemovedNote(value);
-    onSave('');
+    try { await onSave('', value); } catch (e) { setMessage(String(e)); return; }
     setMessage('Shopping note removed.');
     editButtonRef.current?.focus();
   }
 
-  function undoRemove() {
+  async function undoRemove() {
     if (removedNote === null) return;
-    onSave(removedNote);
+    try { await onSave(removedNote, value); } catch (e) { setMessage(String(e)); return; }
     setRemovedNote(null);
     setMessage('Shopping note restored.');
     editButtonRef.current?.focus();
@@ -92,7 +96,8 @@ export function ShoppingNote({ value, onSave }: ShoppingNoteProps) {
       <p className="shopping-note-text">{value}</p>
       <button type="button" className="text-button shopping-note-remove" onClick={remove}><Trash2 size={14} aria-hidden="true"/> Remove note</button>
     </div>}
-    <p className="shopping-note-storage" id={`${id}-storage`}>Saved in this browser. Included in full cookbook backups.</p>
+    <p className="shopping-note-storage" id={`${id}-storage`}>{shared ? 'Edits are shared with your household.' : 'Edits stay in this browser.'} Included in full cookbook backups.</p>
+    {!shared && sharedReminder && <p>Household reminder · {sharedReminder}</p>}
     <div className="shopping-note-feedback">
       <p role="status">{message}</p>
       {removedNote !== null && !value && !editing && <button type="button" className="text-button" onClick={undoRemove}><Undo2 size={14} aria-hidden="true"/> Undo</button>}

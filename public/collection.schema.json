@@ -112,7 +112,7 @@
                 "id",
                 "name"
               ],
-              "additionalProperties": false
+              "additionalProperties": {}
             }
           },
           "ingredients": {
@@ -191,7 +191,7 @@
                 "groceryCategory",
                 "shoppingKey"
               ],
-              "additionalProperties": false
+              "additionalProperties": {}
             }
           },
           "events": {
@@ -264,7 +264,7 @@
                 "instruction",
                 "track"
               ],
-              "additionalProperties": false
+              "additionalProperties": {}
             }
           },
           "notes": {
@@ -300,7 +300,7 @@
           "notes",
           "servingInstructions"
         ],
-        "additionalProperties": false
+        "additionalProperties": {}
       }
     }
   },

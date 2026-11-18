@@ -60,11 +60,11 @@ export function FullBackup({ onExport, onRestore, currentRecipeCount }: Props) {
     chooseButton.current?.focus();
   }
 
-  function restore() {
+  async function restore() {
     if (!backup || !confirmed || restoring) return;
     setError(''); setNotice(''); setRestoring(true);
     try {
-      onRestore(backup);
+      await onRestore(backup);
       setBackup(null); setConfirmed(false);
       setNotice('Your full cookbook backup has been restored.');
     } catch (cause) {

@@ -20,7 +20,9 @@ pnpm build
 pnpm preview
 ```
 
-The production output is `dist/`. The preview command serves that output, normally at `http://127.0.0.1:4173`. Upload the **contents** of `dist/` to any static web server. Vite uses `base: './'`, local assets resolve relative to the application, and hash navigation supports a subdirectory such as `/countertop/` without route rewrite rules. Use an HTTP server rather than opening `dist/index.html` directly with `file://`.
+The production build serves from `/apps/recipes/`. Open `http://127.0.0.1:4173/apps/recipes/` for a static preview. Recipe links use the hash. Production API requests use the same host under `/api/v1/`.
+
+For development with a separate **loopback** Personal Sync Service on port 4317, set `COUNTERTOP_LOCAL_PSS=1` before starting Vite and configure that service with the exact Vite origin. The cookbook also works independently of the service.
 
 ## Use your cookbook
 
@@ -30,7 +32,7 @@ The production output is `dist/`. The preview command serves that output, normal
 - **Timeline:** scan relative start times, named cooking tracks, durations, overlapping activities, temperature targets, and doneness guidance.
 - **Cook:** start/pause/resume a session, jump to any step, mark steps complete, and run several independent timers. Timers start explicitly and continue independently if the session clock is paused. Refresh restores session and timer state.
 - **Shopping list:** add recipes from their detail pages, adjust servings, collect compatible ingredients by grocery category, check items off, hide purchased items, reset, copy, or print.
-- **Personal shopping notes:** in a recipe’s Overview, choose **Add note** near the shopping-list action. Keep a plain-text reminder of up to 500 characters, such as a preferred brand. Notes appear beside their recipes in Shopping List and in copied or printed shopping lists. Edit, remove, or immediately undo removal. Notes stay with the recipe when it leaves the shopping menu or a same-ID recipe is replaced; removing the recipe itself removes its note. Notes do not change ingredients, quantities, or cooking steps.
+- **Personal shopping notes:** in a recipe’s Overview, choose **Add note** near the shopping-list action. Keep a plain-text reminder of up to 500 characters, such as a preferred brand. Notes appear beside their recipes in Shopping List and in copied or printed shopping lists. Edit, remove, or immediately undo removal. Notes stay with the recipe when it leaves the shopping menu or a same-ID recipe is replaced; a confirmed local removal also removes its private reminder. Shared reminders have their own lifecycle. Notes do not change ingredients, quantities, or cooking steps.
 - **Dinner timing:** choose **Time this dinner** from the shopping list. Set a serving date and time to align up to 12 recipes into one chronological timeline, with individual start times, overlapping tasks, and temperature guidance. This coordinates estimates; it does not automatically resolve oven or burner conflicts or change cooking times when servings change.
 - **Cooking conveniences:** use **Focus mode** for larger instructions and fewer distractions (Escape exits). Opt into **Keep screen awake** on supported browsers and **Enable timer sound** for a brief foreground chime. Both turn off when you leave Cook; sound needs an explicit click each time you return. Add a minute to a running or paused timer; adding time to a finished timer leaves it paused until you resume it.
 - **Pick up where you left off:** active sessions appear in the library with step progress and live timer summaries. Resume without losing work.
@@ -68,6 +70,7 @@ Sample recipes are illustrative original content, not reproductions of a private
 | `src/features/shopping` | Grocery aggregation display, checklist, copy, print |
 | `src/features/import-export` | Validated import preview, exports, recipe management, preferences |
 | `src/domain` | Zod model, pure scaling, aggregation, timeline, timers, import/export logic and tests |
+| `src/sync` | IndexedDB library, migration, scope-bound outbox, household transport, reconciliation and settings |
 | `src/storage` | Versioned localStorage envelope, safe recovery, persistence hook and tests |
 | `src/data/recipes` | Bundled recipe JSON |
 | `src/styles` | Responsive editorial styles and theme tokens |
@@ -77,12 +80,12 @@ The app uses Vite, React, strict TypeScript, Tailwind CSS, Lucide, Zod, and Vite
 
 ## Persistence and practical limits
 
-- Browser `localStorage` is the only persistent application store. Separate `countertop:v1:` keys hold the collection, favorites, appearance, servings, ingredient checks, shopping selections/checks, and cooking sessions/timers. Existing saved collections are retained at startup, including an intentionally empty collection.
-- Malformed or unavailable storage falls back safely and shows a warning. A quota failure leaves the current view usable, but unsaved changes may disappear after reload. Export recipes before leaving when a storage warning appears.
-- **Recipe-only exports contain recipe content only.** Use **Full cookbook backup** to transfer your personal notes, favorites, shopping plans, checklists, appearance, serving choices, dinner timing, and saved cooking progress too. Neither format embeds image files. Backups are manual local JSON downloads; there is no synchronization. Personal shopping notes use their own `countertop:v1:shopping-notes` storage key.
+- IndexedDB stores recipes, private reminders, shared records, pending operations, raw migration data and recovery copies. The original localStorage collection remains available for recovery. Device preferences and cooking progress use the existing versioned localStorage keys.
+- **Sync** opens setup for an unconnected library. Select a shared household Space and review the download. Existing local recipes and reminders each require an explicit upload choice. Once connected, recipe changes and opted-in reminder changes synchronize automatically. Advanced sync settings include account, Space switching, recovery downloads and conflict review.
+- **Full cookbook backup** transfers recipes, reminders and device-local progress. A restore pauses sharing for a new preview. **Download recovery copies** also includes queue and version history held in the browser. Recipe-only exports contain authored recipes.
 - Timer remaining time is calculated from persisted timestamps, so throttled tab intervals do not accumulate drift. Finished timers show visible alerts. Optional chimes play only for newly finished timers while the cooking view is visible and audio is enabled; they are not replayed after reload or a hidden tab. Device volume and browser audio policy still apply. There are no push notifications or guaranteed alerts when the browser is closed.
 - Screen wake lock requires a supporting browser and a secure context (HTTPS or localhost). The app reports whether a lock is active or declined, releases it when Cook is hidden or left, and requests it again when the visible cooking page returns. Browser or battery policies can release it. Focus mode itself does not depend on this API.
-- After its static assets have loaded, the open app works without a network connection. There is no service worker or guaranteed offline cold start/reload. Optional remote cover URLs need a connection; local bundled imagery does not.
+- The production service worker caches the static shell and bundled assets for offline reload after its first successful installation. Optional remote cover URLs need a connection; local bundled imagery does not.
 - Shopping merges equal normalized ingredient identities only when units and quantity kinds are compatible. Basic unit aliases are supported; universal weight/volume conversions are outside v0.1.
 - Scaling changes ingredient quantities only. Cook larger batches according to actual doneness, pan capacity, and the recipe’s notes. Cooking times are approximate.
 
@@ -97,3 +100,5 @@ Run `node scripts/browser-backup.mjs` for full backup export, preview, cancel, r
 Run `node scripts/browser-shopping-notes.mjs` for note editing, refresh recovery, copy/print, safe text rendering, long-note responsive layouts, and recipe replacement/removal behavior.
 
 Regenerate JSON Schemas after changing the runtime schema with `node docs/generate-schema.mjs`. Runtime validation also enforces cross-field rules that JSON Schema cannot express; see the format guide. See [`docs/assets.md`](docs/assets.md) for image provenance and font/icon licenses.
+
+After building, run `node scripts/browser-sync.mjs` for the local PSS integration suite. The test uses the compiled sibling service, a temporary SQLite database and isolated Chrome profiles. See the [integration report](docs/PERSONAL_SYNC_INTEGRATION_REPORT.md) for verification and rollout.

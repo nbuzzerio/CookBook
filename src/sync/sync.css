@@ -1,0 +1,25 @@
+.sync-header { display: grid; justify-items: center; position: relative; }
+.sync-header button { min-height: 36px; padding: 6px 12px; }
+.sync-header small { position: absolute; top: 100%; font-size: 9px; white-space: nowrap; }
+.sync-settings { margin-bottom: 1rem; overflow-wrap: anywhere; }
+.sync-settings summary { cursor: pointer; font-weight: 600; }
+.sync-settings p, .sync-settings h3, .sync-settings section { margin-block: .75rem; }
+.sync-settings fieldset { min-width: 0; border: 0; padding: 0; margin-block: .8rem; }
+.sync-settings legend { font-weight: 600; }
+.sync-settings label { display: flex; align-items: center; gap: .6rem; margin: .6rem 0; }
+.sync-settings select, .sync-settings input[type=password] { max-width: 100%; min-width: 0; background: var(--surface); color: inherit; border: 1px solid currentColor; border-radius: .4rem; padding: .4rem; }
+.sync-settings .btn { margin: .25rem .4rem .25rem 0; white-space: normal; }
+.sync-settings pre { text-align: left; font-size: .8rem; white-space: pre-wrap; overflow-wrap: anywhere; max-height: 20rem; overflow: auto; }
+.sync-copies { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,13rem),1fr)); gap: .75rem; margin: .6rem 0; }
+.sync-comparison { border-top: 1px solid var(--line); padding-top: .5rem; }
+@media(max-width: 440px) { .header-actions { gap: 4px; } .sync-header button { padding: 5px 7px; } }
+
+@media (max-width: 440px) {
+  .app-header .header-inner { gap: 6px; padding-inline: 14px; }
+  .app-header .brand-mark { display: none; }
+  .sync-header small { max-width: 88px; white-space: normal; text-align: center; line-height: 1; }
+}
+
+.sync-difference { padding: .6rem .85rem; border-inline-start: 2px solid var(--line); margin-block: .7rem; }
+.sync-difference dt { color: var(--muted); font-size: .8rem; }
+.sync-difference dd { margin: .15rem 0 .5rem; white-space: pre-wrap; }

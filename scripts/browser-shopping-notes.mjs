@@ -1,3 +1,4 @@
+import { readLibrary } from './browser-storage.mjs';
 import { chromium, expect } from '@playwright/test';
 import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
@@ -21,6 +22,7 @@ await page.evaluate(({recipe})=>{
 },{recipe});
 await page.goto(`${base}#/recipe/${recipe.id}/overview`);
 await page.reload();
+await page.locator('.ingredient-preview .preview-group').first().waitFor();
 const originalGroups=await page.locator('.ingredient-preview .preview-group').allTextContents();
 const storedWork=await page.evaluate(id=>[localStorage.getItem(`countertop:v1:ingredients:${id}`),localStorage.getItem(`countertop:v1:session:${id}`)],recipe.id);
 const note='Buy <b>the GF brand</b>.\n3 cups? Check the package label.';
@@ -108,8 +110,8 @@ await page.locator('.shopping-recipe').screenshot({path:'.qa/shopping-notes/shop
 await page.goto(`${base}#/settings`);
 page.once('dialog',dialog=>dialog.accept());
 await page.getByRole('button',{name:`Remove ${replacement.name}`,exact:true}).click();
-assert.equal(await page.evaluate(id=>JSON.parse(localStorage.getItem('countertop:v1:shopping-notes')).value[id],recipe.id),undefined);
-assert.equal(await page.evaluate(id=>JSON.parse(localStorage.getItem('countertop:v1:shopping-notes')).value[id],other.id),'Choose vegetarian cheese.');
+assert.equal((await readLibrary(page)).privateNotes[recipe.id],undefined);
+assert.equal((await readLibrary(page)).privateNotes[other.id],'Choose vegetarian cheese.');
 
 const corrupt=await browser.newContext();
 await corrupt.addInitScript(id=>localStorage.setItem('countertop:v1:shopping-notes',JSON.stringify({version:1,value:{[id]:123}})),recipe.id);
