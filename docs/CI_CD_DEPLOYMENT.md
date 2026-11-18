@@ -56,19 +56,19 @@ ssh_opts=(-o StrictHostKeyChecking=yes -o HostKeyAlias=recipes-droplet
           -o HostKeyAlgorithms=ssh-ed25519 -o GlobalKnownHostsFile=/dev/null
           -o "UserKnownHostsFile=$pins")
 ssh -p "$ssh_port" "${ssh_opts[@]}" "$admin@$ssh_host" 'mkdir -m 700 ~/countertop-ci-setup'
-scp -P "$ssh_port" "${ssh_opts[@]}" "$key.pub" deploy/{setup.sh,login.sh,bundle.py,receiver.py,recipes.nginx.conf,countertop-recover.path,countertop-recover.service} "$admin@$ssh_host:countertop-ci-setup/"
+scp -P "$ssh_port" "${ssh_opts[@]}" "$key.pub" deploy/{setup.sh,bundle.py,receiver.py,recipes.nginx.conf,countertop-recover.path,countertop-recover.service} "$admin@$ssh_host:countertop-ci-setup/"
 ```
 
-Compare the printed fingerprint with the console fingerprint. The public key and seven reviewed setup files are the entire server handoff.
+Compare the printed fingerprint with the console fingerprint. The public key and six reviewed setup files are the entire server handoff.
 
 ## 3. Install the restricted account
 
-On the Droplet, use Ubuntu with systemd, Python 3.10+, OpenSSH, Nginx and distribution-supported Bubblewrap. The installer is for fresh provisioning. It checks for existing account, group, paths and unit names before installation. A partial installation requires inspection of the named resources before resuming.
+On the Droplet, use Ubuntu with systemd, Python 3.10+, OpenSSH, Nginx and CA certificates. The installer is for fresh provisioning. It checks for existing account, group, paths and unit names before installation. A partial installation requires inspection of the named resources before resuming.
 
 ```bash
 cd ~/countertop-ci-setup
 sudo apt-get update
-sudo apt-get install --no-install-recommends bubblewrap ca-certificates
+sudo apt-get install --no-install-recommends ca-certificates
 sudo bash ./setup.sh "$PWD/countertop-actions.pub"
 
 id recipes-deploy
@@ -80,10 +80,10 @@ sudo ls -ld /var/lib/recipes-deploy{,/.ssh} /var/lib/recipes-deploy/.ssh/authori
   /usr/local/lib/countertop /var/www/countertop{,/releases}
 systemctl is-enabled countertop-recover.{service,path}
 systemctl is-active countertop-recover.path
-sudo -u recipes-deploy /usr/local/lib/countertop/login.sh recover
+sudo -u recipes-deploy /usr/bin/python3 -BEs /usr/local/lib/countertop/receiver.py recover
 ```
 
-Expect only the private `recipes-deploy` group, a locked password, no sudo grants and the dedicated root-owned authorized key. Check host-specific SSH policy for the actual runner route. The sole key has OpenSSH `restrict,command="receive"`. The root-owned login shell accepts sshd’s forced invocation and starts the receiver without a terminal or forwarding. Its filesystem namespace exposes the Countertop deployment tree for writing, with Python, helpers, resolver files and CA certificates mounted read-only. Other application trees are outside that namespace. Setup exercises the confined receiver before installing the key. If namespace creation is disabled, resolve the host’s Bubblewrap policy and repeat the confined self-check.
+Expect only the private `recipes-deploy` group, a locked password, no sudo grants and the dedicated root-owned authorized key. OpenSSH invokes `/bin/sh -c` to run the fixed key command `/usr/bin/python3 -BEs /usr/local/lib/countertop/receiver.py receive`. The `restrict` option disables PTY, forwarding and user SSH startup scripts. The receiver accepts only `publish COMMIT SHA256` in `SSH_ORIGINAL_COMMAND`. Its write operations are rooted at `/var/www/countertop`. Root owns the home, SSH configuration and helpers. Keep sibling deployment trees writable only by their respective owners. Verify the effective sshd policy for the runner route honors the dedicated authorized key and locked account.
 
 The `countertop-recover.path` watcher starts a one-shot service when a transaction is pending. The service waits for the receiver’s lock. It restores an interrupted switch if the publisher died and also runs before Nginx during normal boot. Ordinary releases require neither systemd administration nor Nginx reloads.
 
@@ -182,8 +182,8 @@ Use the SSH administrator session. Run recovery after an ambiguous SSH disconnec
 
 ```bash
 root=/var/www/countertop
-shell=/usr/local/lib/countertop/login.sh
-sudo -u recipes-deploy "$shell" recover
+receiver=/usr/local/lib/countertop/receiver.py
+sudo -u recipes-deploy /usr/bin/python3 -BEs "$receiver" recover
 readlink "$root/current"
 ls -lt "$root/releases"
 sudo journalctl -u countertop-recover.service -n 20 --no-pager
@@ -194,7 +194,7 @@ Select a previously verified commit from the successful deployment log. The comm
 ```bash
 active=$(basename "$(readlink "$root/current")")
 read -rp 'Previously verified full 40-character commit SHA: ' good
-sudo -u recipes-deploy "$shell" rollback "$active" "$good"
+sudo -u recipes-deploy /usr/bin/python3 -BEs "$receiver" rollback "$active" "$good"
 curl -fsS https://www.nickbuzzerio.com/apps/recipes/release.json | jq -e --arg good "$good" '.commit == $good'
 ```
 
@@ -202,7 +202,7 @@ Fix or revert main before the next push. For a failed first deployment, correct 
 
 ## Repeat local validation
 
-On a disposable Ubuntu 24.04 environment with Node 24.18.0, use the following commands from the repository root. Run the tests as an ordinary user. The two package installation commands are for the local test machine.
+On a disposable Ubuntu 24.04 environment with Node 24.18.0, use the following commands from the repository root. Use an ordinary user for the release and browser suites. The provisioning fixture uses sudo to test root ownership and unprivileged access in a temporary directory.
 
 ```bash
 npm install --global pnpm@11.9.0
@@ -213,9 +213,9 @@ pnpm build
 sha=$(git rev-parse HEAD)
 archive=$(mktemp --suffix=.zip)
 python3 deploy/bundle.py dist "$archive" "$sha"
-sudo apt-get update && sudo apt-get install -y nginx python3-paramiko bubblewrap
+sudo apt-get update && sudo apt-get install -y nginx python3-paramiko
 pnpm exec playwright install --with-deps chromium --only-shell
-bash tests/login_smoke.sh
+sudo bash tests/provision_smoke.sh
 systemd-analyze verify deploy/countertop-recover.{path,service}
 /usr/bin/python3 tests/test_release.py
 python3 tests/nginx_smoke.py "$archive" "$sha"
@@ -243,9 +243,9 @@ Save a full cookbook backup and the recovery download on the device that holds t
 | --- | --- |
 | CI implemented | Push, pull request and dispatch triggers; frozen install, typecheck, unit tests, build, packaging and all five standalone suites. Actionlint 1.7.12 passed. All four official action pins resolved. The deploy condition accepted exactly the two eligible cases in 32 local event, ref and repository combinations. |
 | CD implemented | Verified archive transfer, dedicated restricted account, atomic symlink activation, HTTPS verification, automatic rollback, recovery watcher, retention and operator rollback. |
-| Local validation results | Windows and Ubuntu passed all 93 unit tests and the production build. Ubuntu passed 11 release tests, the restricted-login smoke, systemd unit verification, the packaged Nginx/TLS browser smoke and all five standalone Chromium suites. Real loopback OpenSSH rejected the wrong host key before authentication. The receiver restored the previous release after each injected HTTPS fault. Windows passed the extended private PSS browser suite on a synthetic database. Vite reported its existing Zod annotation and bundle-size advisories. |
+| Local validation results | Windows and Ubuntu passed all 93 unit tests and the production build. Ubuntu passed 11 release tests, the provisioning permissions and forced-command smoke, systemd unit verification, the packaged Nginx/TLS browser smoke and all five standalone Chromium suites. Real loopback OpenSSH rejected the wrong host key before authentication. The receiver restored the previous release after each injected HTTPS fault. Windows passed the extended private PSS browser suite on a synthetic database. Vite reported its existing Zod annotation and bundle-size advisories. |
 | GitHub-hosted validation | Pending the first run of this workflow on GitHub. |
-| Live server setup | Pending owner execution. The restricted shell and recovery handler ran locally. Systemd unit syntax was verified. Droplet provisioning, systemd startup and the live vhost require the owner setup above. |
+| Live server setup | Pending owner execution. The forced receiver and recovery handler ran locally. Systemd unit syntax was verified. Droplet provisioning, systemd startup and the live vhost require the owner setup above. |
 | Production deployment | Pending. All automated deployment and browser checks used local fixtures. |
 | Real-data sync readiness | Pending confirmation of the running PSS validators, device backups and a physical two-device trial. |
 

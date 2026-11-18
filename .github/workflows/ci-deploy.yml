@@ -43,10 +43,10 @@ jobs:
         run: |
           pnpm exec playwright install --with-deps chromium --only-shell
           sudo apt-get update
-          sudo apt-get install -y nginx python3-paramiko bubblewrap
+          sudo apt-get install -y nginx python3-paramiko
       - name: Check restricted SSH login and transaction recovery units
         run: |
-          bash tests/login_smoke.sh
+          sudo bash tests/provision_smoke.sh
           systemd-analyze verify deploy/countertop-recover.{path,service}
       - name: Test release integrity, host pinning, activation, recovery and retention
         run: /usr/bin/python3 tests/test_release.py
